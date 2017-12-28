@@ -136,18 +136,29 @@ namespace CryptoNote {
 			return static_cast<uint32_t>(-1);
 		}
 	}
-
+	
+	/* Reward do forknote 2.1.2 */
 	bool Currency::getBlockReward(uint8_t blockMajorVersion, size_t medianSize, size_t currentBlockSize, uint64_t alreadyGeneratedCoins,
 		uint64_t fee, uint64_t& reward, int64_t& emissionChange) const {
-		// assert(alreadyGeneratedCoins <= m_moneySupply);
+		uint64_t m_genesisBlockReward = CryptoNote::parameters::TAIL_EMISSION_REWARD;
+		uint64_t m_tailEmissionReward = CryptoNote::parameters::TAIL_EMISSION_REWARD;
+		uint64_t m_moneySupply = CryptoNote::parameters::MONEY_SUPPLY;
+		uint64_t m_emissionSpeedFactor = CryptoNote::parameters::EMISSION_SPEED_FACTOR;
+
+		assert(alreadyGeneratedCoins <= m_moneySupply);
 		assert(m_emissionSpeedFactor > 0 && m_emissionSpeedFactor <= 8 * sizeof(uint64_t));
 
-		// Tail emission
-
 		uint64_t baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactor;
-		if (alreadyGeneratedCoins + CryptoNote::parameters::TAIL_EMISSION_REWARD >= m_moneySupply || baseReward < CryptoNote::parameters::TAIL_EMISSION_REWARD)
-		{
-			baseReward = CryptoNote::parameters::TAIL_EMISSION_REWARD;
+		if (alreadyGeneratedCoins == 0 && m_genesisBlockReward != 0) {
+			baseReward = m_genesisBlockReward;
+			std::cout << "Genesis block reward: " << baseReward << std::endl;
+		}
+		if (baseReward < m_tailEmissionReward) {
+			baseReward = m_tailEmissionReward;
+		}
+
+		if (alreadyGeneratedCoins + baseReward >= m_moneySupply) {
+			baseReward = 0;
 		}
 
 		size_t blockGrantedFullRewardZone = blockGrantedFullRewardZoneByBlockVersion(blockMajorVersion);
