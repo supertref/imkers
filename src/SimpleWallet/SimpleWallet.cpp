@@ -64,7 +64,7 @@
 
 #include <Logging/LoggerManager.h>
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <Windows.h>
 #include <crtdbg.h>
 #include <winsock2.h>
