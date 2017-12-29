@@ -976,13 +976,13 @@ bool Blockchain::validate_miner_transaction(const Block& b, uint32_t height, siz
   }
 
   if (minerReward > reward) {
-	  if (m_blocks.size() > 36909) {
+	  if (m_blocks.size() > 37040) {
 		  logger(ERROR, BRIGHT_RED) << "Coinbase transaction spend too much money: " << m_currency.formatAmount(minerReward) <<
 			  ", block reward is " << m_currency.formatAmount(reward);
 		  return false;
 	  }
   } else if (minerReward < reward) {
-	if (m_blocks.size() > 36909) {
+	if (m_blocks.size() > 37040) {
 		logger(ERROR, BRIGHT_RED) << "Coinbase transaction doesn't use full amount of block reward: spent " <<
 			m_currency.formatAmount(minerReward) << ", block reward is " << m_currency.formatAmount(reward);
 		return false;
@@ -1875,7 +1875,7 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
   auto target_calculating_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - targetTimeStart).count();
 
   if (!(currentDifficulty)) {    
-	if (m_blocks.size() > 36909) {
+	if (m_blocks.size() > 37040) {
 		logger(ERROR, BRIGHT_RED) << "!!!!!!!!! difficulty overhead !!!!!!!!!";
 		return false;
 	}
@@ -1893,7 +1893,7 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
     }
   } else {
     if (!m_currency.checkProofOfWork(m_cn_context, blockData, currentDifficulty, proof_of_work)) {
-	  if (m_blocks.size() > 36909) {
+	  if (m_blocks.size() > 37040) {
 		  logger(INFO, BRIGHT_WHITE) <<
 			  "Block " << blockHash << ", has too weak proof of work: " << proof_of_work << ", expected difficulty: " << currentDifficulty;
 		  bvc.m_verifivation_failed = true;
@@ -1959,7 +1959,7 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
   uint64_t already_generated_coins = m_blocks.empty() ? 0 : m_blocks.back().already_generated_coins;
   if (!validate_miner_transaction(blockData, static_cast<uint32_t>(m_blocks.size()), cumulative_block_size, already_generated_coins, fee_summary, reward, emissionChange)) {
     logger(INFO, BRIGHT_WHITE) << "Block " << blockHash << " has invalid miner transaction";
-	if (m_blocks.size() > 36909) {
+	if (m_blocks.size() > 37040) {
 		bvc.m_verifivation_failed = true;
 		popTransactions(block, minerTransactionHash);
 		return false;
