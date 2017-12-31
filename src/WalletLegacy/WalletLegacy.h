@@ -64,7 +64,7 @@ public:
   virtual void shutdown() override;
   virtual void reset() override;
 
-  Crypto::SecretKey generateKey(const std::string& password, const Crypto::SecretKey& recovery_param = Crypto::SecretKey(), bool recover = false, bool two_random = false);
+  Crypto::SecretKey generateKey(const std::string& password, const Crypto::SecretKey& recovery_param = Crypto::SecretKey(), bool recover = false, bool two_random = false) override;
 
   virtual void save(std::ostream& destination, bool saveDetailed = true, bool saveCache = true) override;
 
@@ -88,7 +88,7 @@ public:
   virtual std::error_code cancelTransaction(size_t transactionId) override;
 
   virtual void getAccountKeys(AccountKeys& keys) override;
-  bool getSeed(std::string& electrum_words);
+  bool getSeed(std::string& electrum_words) override;
 
 private:
 
