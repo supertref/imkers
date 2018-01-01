@@ -1715,7 +1715,7 @@ bool simple_wallet::fetch_dns_txt(const std::string domain, std::string &record)
 		ns_type type = ns_t_txt;
 
 		const char * c_domain = (domain).c_str();
-		response = res_query(c_domain, NULL, type, query_buffer, sizeof(query_buffer));
+		response = res_query(c_domain, "", type, query_buffer, sizeof(query_buffer));
 
 		if (response < 0) {
 			return 1;
