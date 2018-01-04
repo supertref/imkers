@@ -1877,7 +1877,7 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
   difficulty_type currentDifficulty = 0;
 
   if (m_blocks.size() < BLOCK_HEIGHT_ALIGNMENT) {
-	  currentDifficulty = 100000;
+	  currentDifficulty = 1000000;
   }
   else {
 	  currentDifficulty = getDifficultyForNextBlock();
