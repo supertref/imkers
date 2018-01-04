@@ -58,7 +58,7 @@ bool operator<(const Crypto::KeyImage& keyImage1, const Crypto::KeyImage& keyIma
 
 #define CURRENT_BLOCKCACHE_STORAGE_ARCHIVE_VER 1
 #define CURRENT_BLOCKCHAININDICES_STORAGE_ARCHIVE_VER 1
-#define BLOCK_HEIGHT_ALIGNMENT 39130
+#define BLOCK_HEIGHT_ALIGNMENT 39500
 
 namespace CryptoNote {
 class BlockCacheSerializer;
@@ -1872,16 +1872,23 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
   }
 
   auto targetTimeStart = std::chrono::steady_clock::now();
-  difficulty_type currentDifficulty = getDifficultyForNextBlock();
   auto target_calculating_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - targetTimeStart).count();
 
+  difficulty_type currentDifficulty = 0;
+
+  if (m_blocks.size() < BLOCK_HEIGHT_ALIGNMENT) {
+	  currentDifficulty = 10000000;
+  }
+  else {
+	  currentDifficulty = getDifficultyForNextBlock();
+  }
+  
   if (!(currentDifficulty)) {    
 	if (m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT) {
 		logger(ERROR, BRIGHT_RED) << "!!!!!!!!! difficulty overhead !!!!!!!!!";
 		return false;
 	}
   }
-
 
   auto longhashTimeStart = std::chrono::steady_clock::now();
   Crypto::Hash proof_of_work = NULL_HASH;
