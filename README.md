@@ -10,13 +10,13 @@ You can download the binaries for Linux, MacOS, and Windows [HERE](https://githu
 
 ### On *nix and OSX
 
-Dependencies: GCC 4.7.3 or later, CMake 2.8.6 or later, and Boost 1.55.
+Dependencies: GCC 4.7.3 or later, CMake 2.8.6 or later, and Boost 1.58.
 
 You may download them from:
 
 * http://gcc.gnu.org/
 * http://www.cmake.org/
-* http://www.boost.org/ v15.8
+* http://www.boost.org/
 * Alternatively, it may be possible to install them using a package manager.
 
 To build, go the the project folder - same level of src - and run:
