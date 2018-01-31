@@ -76,6 +76,7 @@ namespace CryptoNote {
 		if (isTestnet()) {
 			m_upgradeHeightV2 = 0;
 			m_upgradeHeightV3 = static_cast<uint32_t>(-1);
+			m_upgradeHeightV4 = static_cast<uint32_t>(4);
 			m_blocksFileName = "testnet_" + m_blocksFileName;
 			m_blocksCacheFileName = "testnet_" + m_blocksCacheFileName;
 			m_blockIndexesFileName = "testnet_" + m_blockIndexesFileName;
@@ -133,8 +134,11 @@ namespace CryptoNote {
 		else if (majorVersion == BLOCK_MAJOR_VERSION_3) {
 			return m_upgradeHeightV3;
 		}
+		else if (majorVersion == BLOCK_MAJOR_VERSION_4) {
+			return m_upgradeHeightV4;
+		}
 		else {
-			return static_cast<uint32_t>(-1);
+			return static_cast<uint32_t>(4);
 		}
 	}
 	

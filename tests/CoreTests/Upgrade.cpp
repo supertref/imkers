@@ -49,6 +49,7 @@ gen_upgrade::gen_upgrade() : m_invalidBlockIndex(0), m_checkBlockTemplateVersion
   currencyBuilder.upgradeHeightV2(UpgradeDetectorBase::UNDEF_HEIGHT);
   // Disable voting and never upgrade to v.3.0
   currencyBuilder.upgradeHeightV3(CryptoNote::parameters::CRYPTONOTE_MAX_BLOCK_NUMBER);
+  currencyBuilder.upgradeHeightV4(CryptoNote::parameters::CRYPTONOTE_MAX_BLOCK_NUMBER);
   m_currency = currencyBuilder.currency();
 
   REGISTER_CALLBACK_METHOD(gen_upgrade, markInvalidBlock);
