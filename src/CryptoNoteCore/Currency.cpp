@@ -261,14 +261,14 @@ namespace CryptoNote {
 		outAmounts.insert(outAmounts.begin(), (feeReward / 2));
 
         // Initialize Research address
-        std::string addressStr = "NAYATmY9xKvJwppYJkiS39FCdRNTnuK5jesAfvAhc4fXFRYiSCq7FU6RDafsxZaNpSgCmiCoHML4mLsSdJhGvhMY2EBymZm";
+        std::string addressStr = "ND2RCy7ry6mfKjCdHdC2TYJ1BfsLRpeSJK9SPgAQAvn1UGdWTjka7cuVh5JNNFSCy5J92P3sHrWVk6RAk8esJa9tCAaHKQW";
         CryptoNote::AccountPublicAddress researchAddress;
         if(!(CryptoNote::Currency::parseAccountAddressString(addressStr, researchAddress))) {
             logger(ERROR, BRIGHT_RED) << "Could note get research public key";
         }
 
         // Initialize NBR Project address
-        addressStr = "NAwFQ7dUx89eVRkqYiUUvsX3PLABMxYBUUTsUWjVBaj8TNCc5scWZHzLjuZXJYpcWe41h6pu1NHB7Zi3JUremm2RGD8mpua";
+        addressStr = "N7fowzQDBsBMxLM6hoVHRFXtHSJLGn3TCEEksDKAKiJ1KtEdJrvLvELZeCZ1C2cMib598H2LCur1r2E2zH9R798B3hfgVUC";
         CryptoNote::AccountPublicAddress nbrAddress;
         if(!(CryptoNote::Currency::parseAccountAddressString(addressStr, nbrAddress))) {
             logger(ERROR, BRIGHT_RED) << "Could note get nbr project public key";
