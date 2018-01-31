@@ -214,57 +214,131 @@ namespace CryptoNote {
 			return false;
 		}
 
+		// logger(INFO) << "Block reward before fee: " << blockReward;
+        uint64_t feeReward;
+        uint64_t modReward;
+
+        // Tax blockReward by 10 percent to R&D
+        feeReward = blockReward / 10;
+        blockReward -= feeReward;
+        // logger(INFO) << "Block reward after fee: " << blockReward;
+
+        modReward = feeReward % 2;
+        if(modReward > 0) {
+            feeReward -= modReward;
+            // logger(INFO) << "research not divisible by two. Taking out: " << modReward;
+            blockReward += modReward;
+            // logger(INFO) << "Giving modReward back to block reward: " << blockReward;
+        }
+        // logger(INFO) << "nbr and research reward. Each: " << feeReward / 2;
+        // We're finished with rewards calculation
+
 		std::vector<uint64_t> outAmounts;
+
 		decompose_amount_into_digits(blockReward, m_defaultDustThreshold,
 			[&outAmounts](uint64_t a_chunk) { outAmounts.push_back(a_chunk); },
 			[&outAmounts](uint64_t a_dust) { outAmounts.push_back(a_dust); });
 
 		if (!(1 <= maxOuts)) { logger(ERROR, BRIGHT_RED) << "max_out must be non-zero"; return false; }
+
+		// Give space to 2 new tx outs, if needed
+
+		if (maxOuts > 3) {
+		    maxOuts -= 2;
+		}
+
 		while (maxOuts < outAmounts.size()) {
 			outAmounts[outAmounts.size() - 2] += outAmounts.back();
 			outAmounts.resize(outAmounts.size() - 1);
 		}
 
-		uint64_t summaryAmounts = 0;
+		// Push two tx out amounts. One for nbr project and another to research
+		outAmounts.insert(outAmounts.begin(), (feeReward / 2));
+		outAmounts.insert(outAmounts.begin(), (feeReward / 2));
+
+        // Initialize Research address
+        std::string addressStr = "NAYATmY9xKvJwppYJkiS39FCdRNTnuK5jesAfvAhc4fXFRYiSCq7FU6RDafsxZaNpSgCmiCoHML4mLsSdJhGvhMY2EBymZm";
+        CryptoNote::AccountPublicAddress researchAddress;
+        if(!(CryptoNote::Currency::parseAccountAddressString(addressStr, researchAddress))) {
+            logger(ERROR, BRIGHT_RED) << "Could note get research public key";
+        }
+
+        // Initialize NBR Project address
+        addressStr = "NAwFQ7dUx89eVRkqYiUUvsX3PLABMxYBUUTsUWjVBaj8TNCc5scWZHzLjuZXJYpcWe41h6pu1NHB7Zi3JUremm2RGD8mpua";
+        CryptoNote::AccountPublicAddress nbrAddress;
+        if(!(CryptoNote::Currency::parseAccountAddressString(addressStr, nbrAddress))) {
+            logger(ERROR, BRIGHT_RED) << "Could note get nbr project public key";
+        }
+
+        uint64_t summaryAmounts = 0;
 		for (size_t no = 0; no < outAmounts.size(); no++) {
 			Crypto::KeyDerivation derivation = boost::value_initialized<Crypto::KeyDerivation>();
-			Crypto::PublicKey outEphemeralPubKey = boost::value_initialized<Crypto::PublicKey>();
+            Crypto::PublicKey outEphemeralPubKey = boost::value_initialized<Crypto::PublicKey>();
 
-			bool r = Crypto::generate_key_derivation(minerAddress.viewPublicKey, txkey.secretKey, derivation);
-
-			if (!(r)) {
-				logger(ERROR, BRIGHT_RED)
-					<< "while creating outs: failed to generate_key_derivation("
-					<< minerAddress.viewPublicKey << ", " << txkey.secretKey << ")";
-				return false;
+            if(no == 0) {
+                // Generate ephemeral public key for research address
+                bool r = Crypto::generate_key_derivation(researchAddress.viewPublicKey, txkey.secretKey, derivation);
+                if (!(r)) {
+                    logger(ERROR, BRIGHT_RED)
+        					<< "while creating outs: failed to generate_key_derivation("
+        					<< researchAddress.viewPublicKey << ", " << txkey.secretKey << ")";
+                    return false;
+                }
+        		r = Crypto::derive_public_key(derivation, 0, researchAddress.spendPublicKey, outEphemeralPubKey);
+                if (!(r)) {
+                    logger(ERROR, BRIGHT_RED)
+        					<< "while creating outs: failed to research derive_public_key("
+        					<< derivation << ", "
+        					<< researchAddress.spendPublicKey << ")";
+                    return false;
+                }
+            } else if(no == 1) {
+                // Generate ephemeral public key for nbr project address
+                bool r = Crypto::generate_key_derivation(nbrAddress.viewPublicKey, txkey.secretKey, derivation);
+                if (!(r)) {
+                    logger(ERROR, BRIGHT_RED)
+        					<< "while creating outs: failed to generate_key_derivation("
+        					<< nbrAddress.viewPublicKey << ", " << txkey.secretKey << ")";
+                    return false;
+                }
+        		r = Crypto::derive_public_key(derivation, 1, nbrAddress.spendPublicKey, outEphemeralPubKey);
+                if (!(r)) {
+                    logger(ERROR, BRIGHT_RED)
+        					<< "while creating outs: failed to nbr derive_public_key("
+        					<< derivation << ", "
+        					<< nbrAddress.spendPublicKey << ")";
+                    return false;
+                }
+            } else {
+                // Generate ephemeral public keys for miner address
+                bool r = Crypto::generate_key_derivation(minerAddress.viewPublicKey, txkey.secretKey, derivation);
+                if (!(r)) {
+                    logger(ERROR, BRIGHT_RED)
+                        << "while creating outs: failed to generate_key_derivation("
+                        << minerAddress.viewPublicKey << ", " << txkey.secretKey << ")";
+                    return false;
+                }
+                r = Crypto::derive_public_key(derivation, no, minerAddress.spendPublicKey, outEphemeralPubKey);
+                if (!(r)) {
+                    logger(ERROR, BRIGHT_RED)
+                        << "while creating outs: failed to derive_public_key("
+                        << derivation << ", " << no << ", "
+                        << minerAddress.spendPublicKey << ")";
+                    return false;
+                }
 			}
-
-			r = Crypto::derive_public_key(derivation, no, minerAddress.spendPublicKey, outEphemeralPubKey);
-
-			if (!(r)) {
-				logger(ERROR, BRIGHT_RED)
-					<< "while creating outs: failed to derive_public_key("
-					<< derivation << ", " << no << ", "
-					<< minerAddress.spendPublicKey << ")";
-				return false;
-			}
-
 			KeyOutput tk;
 			tk.key = outEphemeralPubKey;
-
 			TransactionOutput out;
 			summaryAmounts += out.amount = outAmounts[no];
 			out.target = tk;
 			tx.outputs.push_back(out);
 		}
-
-		if (!(summaryAmounts == blockReward)) {
+		if (!(summaryAmounts == (blockReward + feeReward))) {
 			logger(ERROR, BRIGHT_RED) << "Failed to construct miner tx, summaryAmounts = " << summaryAmounts << " not equal blockReward = " << blockReward;
 			return false;
 		}
-
 		tx.version = CURRENT_TRANSACTION_VERSION;
-		//lock
 		tx.unlockTime = height + m_minedMoneyUnlockWindow;
 		tx.inputs.push_back(in);
 		return true;
@@ -659,6 +733,7 @@ namespace CryptoNote {
 
 		upgradeHeightV2(parameters::UPGRADE_HEIGHT_V2);
 		upgradeHeightV3(parameters::UPGRADE_HEIGHT_V3);
+		upgradeHeightV4(parameters::UPGRADE_HEIGHT_V4);
 		upgradeVotingThreshold(parameters::UPGRADE_VOTING_THRESHOLD);
 		upgradeVotingWindow(parameters::UPGRADE_VOTING_WINDOW);
 		upgradeWindow(parameters::UPGRADE_WINDOW);
