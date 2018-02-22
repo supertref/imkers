@@ -57,11 +57,11 @@ namespace {
     return account;
   }
 
-/*
+
   AccountPublicAddress generateAddress() {
     return generateAccount().getAccountKeys().address;
   }
-*/
+
   KeyImage generateKeyImage() {
     return Crypto::rand<KeyImage>();
   }
