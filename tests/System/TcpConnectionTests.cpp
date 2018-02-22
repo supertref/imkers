@@ -45,7 +45,7 @@ void fillRandomString(std::string& buf) {
     buf[i] = static_cast<uint8_t>(rand() & 0xff);
   }
 }
-/*
+
 std::string removePort(const std::string& address) {
   size_t colonPosition = address.rfind(':');
   if (colonPosition == std::string::npos) {
@@ -54,7 +54,6 @@ std::string removePort(const std::string& address) {
 
   return address.substr(0, colonPosition);
 }
-*/
 }
 
 class TcpConnectionTests : public testing::Test {

@@ -87,7 +87,7 @@ namespace {
 
     transaction.addInput(input);
   }
-/*
+
   TransactionOutputInformationIn addTestKeyOutput(ITransaction& transaction, uint64_t amount,
     uint32_t globalOutputIndex, const AccountKeys& senderKeys = generateAccountKeys()) {
 
@@ -108,7 +108,7 @@ namespace {
 
     return outputInfo;
   }
-*/
+
   inline Transaction convertTx(ITransactionReader& tx) {
     Transaction oldTx;
     fromBinaryArray(oldTx, tx.getTransactionData()); // ignore return code
