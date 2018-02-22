@@ -121,14 +121,10 @@ const uint64_t P2P_DEFAULT_INVOKE_TIMEOUT                    = 60 * 2 * 1000; //
 const size_t   P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT          = 5000;          // 5 seconds
 const char     P2P_STAT_TRUSTED_PUB_KEY[]                    = "";
 
-const char* const SEED_NODES[] = { 
+const char* const SEED_NODES[] = {
 	"45.55.141.227:8313",
 	"138.197.222.188:8313",
-	"35.225.224.17:8313",
-	"35.205.250.90:8313",
 	"35.227.102.144:8313",
-	"35.199.180.121:8313",
-	"35.194.207.184:8313",	
 	"66.70.167.192:8313",
 	"192.99.133.153:8313"
 };
@@ -138,7 +134,7 @@ struct CheckpointData {
   const char* blockId;
 };
 
-const std::initializer_list<CheckpointData> CHECKPOINTS = { 
+const std::initializer_list<CheckpointData> CHECKPOINTS = {
 	{ 19111, "80a25bf8b24f6b286d81d3fb9f65a3dd55c9fe1d508b3d463fa1c0512e45af6f" },
 	{ 19112, "7a0a41f6ccbf72b47a21841b8e876f29877bb57aa15d7adda27c757e77fc7021" },
 	{ 24758, "ef7b7c3803df58e06b21dde88c252569f118cda2fafeae9b56c6061e7c4c18eb" },
@@ -164,7 +160,7 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
 	{ 34396, "6bd1eb16ee0c815922c22e1f352b6387112dacfec36306880895dbba8deeec30" },
 	{ 34760, "f0e0fbc92f69e3dcadd0ca31c7c4eda021f8c50099428a119829ecb9fcf3e29b" },
 	{ 34852, "6cb8a76b41eac291cd7cf74482b3309ecb1623825b592b1267a104caf7d96c8d" },
-	{ 35000, "7eac17f1c048a141f60ee39332a4c0ee873a09eb53e35d6f7172ce78bfb56e8c" },  
+	{ 35000, "7eac17f1c048a141f60ee39332a4c0ee873a09eb53e35d6f7172ce78bfb56e8c" },
 	{ 35591, "2dfbc50e1793c1bb82d4bfffaed25d70ae2ce30b871c70d1625d1e631bfbc71b" },
 	{ 35689, "62ba9bd03dfe51e3a1b334ff88d28407452e287b71c91f712ac5886acc94be40" },
 	{ 35900, "6538ca031f1868672e0cadc4f3338479106bceb0972e146177b0b9dee00608d1" },
@@ -187,13 +183,10 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
 	{ 46696, "7d0d9048be57c80d2c44fe67555b65d93449e088c0773ae630b6165f87562057" },
 	{ 47329, "dbe612e290285c5c5a80f496692be4a6e49c09abee1f50455563ad0a256e748b" },
 	{ 47330, "924feb71a2c589718e8c8a922d9cf5e3ad3163441e4c975bbf41e413481342c2" }
-	
-	
+
+
 };
 
 } // CryptoNote
 
 #define ALLOW_DEBUG_COMMANDS
-
-
-
