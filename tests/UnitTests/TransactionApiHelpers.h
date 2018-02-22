@@ -78,7 +78,7 @@ namespace {
     return keyImage;
   }
 
-/*
+
   void addTestInput(ITransaction& transaction, uint64_t amount) {
     KeyInput input;
     input.amount = amount;
@@ -87,7 +87,7 @@ namespace {
 
     transaction.addInput(input);
   }
-
+/*
   TransactionOutputInformationIn addTestKeyOutput(ITransaction& transaction, uint64_t amount,
     uint32_t globalOutputIndex, const AccountKeys& senderKeys = generateAccountKeys()) {
 
