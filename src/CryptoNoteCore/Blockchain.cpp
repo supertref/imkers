@@ -377,10 +377,10 @@ bool Blockchain::checkTransactionInputs(const CryptoNote::Transaction& tx, Block
     }
 
     //check ring signature again, it is possible (with very small chance) that this transaction become again valid
-    //if (!checkTransactionInputs(tx, maxUsedBlock.height, maxUsedBlock.id, &tail)) {
-    //  lastFailed = tail;
-    //  return false;
-    //}
+    if (!checkTransactionInputs(tx, maxUsedBlock.height, maxUsedBlock.id, &tail)) {
+      lastFailed = tail;
+      return false;
+    }
   }
 
   return true;
