@@ -377,10 +377,10 @@ bool Blockchain::checkTransactionInputs(const CryptoNote::Transaction& tx, Block
     }
 
     //check ring signature again, it is possible (with very small chance) that this transaction become again valid
-    if (!checkTransactionInputs(tx, maxUsedBlock.height, maxUsedBlock.id, &tail)) {
-      lastFailed = tail;
-      return false;
-    }
+    //if (!checkTransactionInputs(tx, maxUsedBlock.height, maxUsedBlock.id, &tail)) {
+    //  lastFailed = tail;
+    //  return false;
+    //}
   }
 
   return true;
@@ -1883,8 +1883,8 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
   else {
 	  currentDifficulty = getDifficultyForNextBlock();
   }
-  
-  if (!(currentDifficulty)) {    
+
+  if (!(currentDifficulty)) {
 	if (m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT) {
 		logger(ERROR, BRIGHT_RED) << "!!!!!!!!! difficulty overhead !!!!!!!!!";
 		return false;
@@ -1966,7 +1966,7 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
   int64_t emissionChange = 0;
   uint64_t reward = 0;
   uint64_t already_generated_coins = m_blocks.empty() ? 0 : m_blocks.back().already_generated_coins;
-  if (!validate_miner_transaction(blockData, static_cast<uint32_t>(m_blocks.size()), cumulative_block_size, already_generated_coins, fee_summary, reward, emissionChange)) {    
+  if (!validate_miner_transaction(blockData, static_cast<uint32_t>(m_blocks.size()), cumulative_block_size, already_generated_coins, fee_summary, reward, emissionChange)) {
 	if (m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT) {
 		logger(INFO, BRIGHT_WHITE) << "Block " << blockHash << " has invalid miner transaction";
 		bvc.m_verifivation_failed = true;
