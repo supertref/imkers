@@ -368,10 +368,10 @@ bool Blockchain::checkTransactionInputs(const CryptoNote::Transaction& tx, Block
     if (maxUsedBlock.height >= getCurrentBlockchainHeight()) {
       return false;
     }
-
     if (getBlockIdByHeight(maxUsedBlock.height) != maxUsedBlock.id) {
       //if we already failed on this height and id, skip actual ring signature check
       if (lastFailed.id == getBlockIdByHeight(lastFailed.height)) {
+        logger(INFO, BRIGHT_WHITE) << "skipping ring_signature check ";
         return false;
       }
     }
