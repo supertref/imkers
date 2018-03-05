@@ -1555,17 +1555,17 @@ bool Blockchain::checkTransactionInputs(const Transaction& tx, const Crypto::Has
     assert(inputIndex < tx.signatures.size());
     if (txin.type() == typeid(KeyInput)) {
       const KeyInput& in_to_key = boost::get<KeyInput>(txin);
-      if (!(!in_to_key.outputIndexes.empty())) { logger(INFO, BRIGHT_WHITE) << "empty in_to_key.outputIndexes in transaction with id " << getObjectHash(tx); return false; }
+      if (!(!in_to_key.outputIndexes.empty())) { logger(TRACE) << "empty in_to_key.outputIndexes in transaction with id " << getObjectHash(tx); return false; }
 
       if (have_tx_keyimg_as_spent(in_to_key.keyImage)) {
-        logger(INFO, BRIGHT_WHITE) <<
+        logger(TRACE) <<
           "Key image already spent in blockchain for transaction " << transactionHash;
           //"Key image already spent in blockchain: " << Common::podToHex(in_to_key.keyImage);
         return false;
       }
 
       if (!check_tx_input(in_to_key, tx_prefix_hash, tx.signatures[inputIndex], pmax_used_block_height)) {
-        logger(INFO, BRIGHT_WHITE) <<
+        logger(TRACE) <<
           "Failed ring signature validation for transaction " << transactionHash;
         return false;
       }
@@ -1573,14 +1573,14 @@ bool Blockchain::checkTransactionInputs(const Transaction& tx, const Crypto::Has
       ++inputIndex;
     } else if (txin.type() == typeid(MultisignatureInput)) {
       if (!validateInput(::boost::get<MultisignatureInput>(txin), transactionHash, tx_prefix_hash, tx.signatures[inputIndex])) {
-        logger(INFO, BRIGHT_WHITE) <<
+        logger(TRACE) <<
           "Failed Multisignature validation for transaction " << transactionHash;
         return false;
       }
 
       ++inputIndex;
     } else {
-      logger(INFO, BRIGHT_WHITE) <<
+      logger(TRACE) <<
         "Transaction << " << transactionHash << " contains input of unsupported type.";
       return false;
     }
