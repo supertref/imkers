@@ -46,7 +46,8 @@ namespace CryptoNote {
       m_blockchain(blockchain),
       m_targetVersion(targetVersion),
       m_votingCompleteHeight(UNDEF_HEIGHT),
-      logger(log, "upgrade") { }
+      logger(log, "upgrade") {
+      }
 
     bool init() {
       uint32_t upgradeHeight = m_currency.upgradeHeight(m_targetVersion);
