@@ -632,7 +632,6 @@ namespace CryptoNote {
 			return 0;
 		}
 		return (low + timeSpan - 1) / timeSpan;
-		// end
 	}
 
 	bool Currency::checkProofOfWorkV1(Crypto::cn_context& context, const Block& block, difficulty_type currentDiffic,
