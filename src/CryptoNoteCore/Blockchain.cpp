@@ -1863,10 +1863,13 @@ bool Blockchain::addNewBlock(const Block& bl_, block_verification_context& bvc) 
 
     //check that block refers to chain tail
     if (!(bl.previousBlockHash == getTailId())) {
+      logger(INFO) << "bl.previousBlockHash = " << bl.previousBlockHash;
+      logger(INFO) << "getTailId() = " << getTailId();
       //chain switching or wrong block
       bvc.m_added_to_main_chain = false;
       add_result = handle_alternative_block(bl, id, bvc);
     } else {
+      logger(INFO) << "calling pushBlock() = " << id;
       add_result = pushBlock(bl, bvc);
       if (add_result) {
         sendMessage(BlockchainMessage(NewBlockMessage(id)));
@@ -2065,6 +2068,7 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
 
   m_upgradeDetectorV2.blockPushed();
   m_upgradeDetectorV3.blockPushed();
+  m_upgradeDetectorV4.blockPushed();
   update_next_comulative_size_limit();
 
   return true;
@@ -2101,6 +2105,7 @@ void Blockchain::popBlock() {
 
   m_upgradeDetectorV2.blockPopped();
   m_upgradeDetectorV3.blockPopped();
+  m_upgradeDetectorV4.blockPopped();
 }
 
 bool Blockchain::pushTransaction(BlockEntry& block, const Crypto::Hash& transactionHash, TransactionIndex transactionIndex) {

@@ -530,7 +530,7 @@ namespace CryptoNote {
 				t += solveTime * i;
 				j++;
 			}
-			std::cout << "N: " << j << std::endl;
+			//std::cout << "N: " << j << std::endl;
 			// Keep t reasonable in case strange solvetimes occurred in an unforeseeable way.
 			if (t < N * (N + 1) / 2 * T / 4) t = N * (N + 1) / 2 * T / 4;
 			difficulty_type totalWork = cumulativeDifficulties.back() - cumulativeDifficulties.front();
