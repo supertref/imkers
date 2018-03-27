@@ -540,8 +540,8 @@ namespace CryptoNote {
 			if (LWMA < T / 4)
 				LWMA = T / 4;
 			nextDiff = static_cast<uint64_t>(harmonicMeanDiff * T / LWMA * adjust);
-
-			return nextDiff;
+			return 20;
+			//return nextDiff;
 		}
 
 	difficulty_type Currency::nextDifficultyV2(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
@@ -585,7 +585,8 @@ namespace CryptoNote {
 		if (nextDiffZ <= 100000) {
 			nextDiffZ = 100000;
 		}
-		return nextDiffZ;
+		return 20;
+		//return nextDiffZ;
 	}
 
 	difficulty_type Currency::nextDifficultyV1(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
@@ -629,7 +630,8 @@ namespace CryptoNote {
 		if (high != 0 || low + timeSpan - 1 < low) {
 			return 0;
 		}
-		return (low + timeSpan - 1) / timeSpan;
+		return 20;
+		//return (low + timeSpan - 1) / timeSpan;
 	}
 
 	bool Currency::checkProofOfWorkV1(Crypto::cn_context& context, const Block& block, difficulty_type currentDiffic,
