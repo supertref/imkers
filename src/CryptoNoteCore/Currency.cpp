@@ -74,12 +74,12 @@ namespace CryptoNote {
 			return false;
 		}
 
-		if (isTestnet()) {
-			m_blocksFileName = "testnet_" + m_blocksFileName;
-			m_blocksCacheFileName = "testnet_" + m_blocksCacheFileName;
-			m_blockIndexesFileName = "testnet_" + m_blockIndexesFileName;
-			m_txPoolFileName = "testnet_" + m_txPoolFileName;
-			m_blockchinIndicesFileName = "testnet_" + m_blockchinIndicesFileName;
+		if (isTestnet() && (m_blocksFileName.compare(0, m_testnetFilenamePrefix.length(), m_testnetFilenamePrefix) != 0)) {
+			m_blocksFileName = m_testnetFilenamePrefix + m_blocksFileName;
+			m_blocksCacheFileName = m_testnetFilenamePrefix + m_blocksCacheFileName;
+			m_blockIndexesFileName = m_testnetFilenamePrefix + m_blockIndexesFileName;
+			m_txPoolFileName = m_testnetFilenamePrefix + m_txPoolFileName;
+			m_blockchainIndicesFileName = m_testnetFilenamePrefix + m_blockchainIndicesFileName;
 		}
 
 		return true;
@@ -775,7 +775,8 @@ namespace CryptoNote {
 		blocksCacheFileName(parameters::CRYPTONOTE_BLOCKSCACHE_FILENAME);
 		blockIndexesFileName(parameters::CRYPTONOTE_BLOCKINDEXES_FILENAME);
 		txPoolFileName(parameters::CRYPTONOTE_POOLDATA_FILENAME);
-		blockchinIndicesFileName(parameters::CRYPTONOTE_BLOCKCHAIN_INDICES_FILENAME);
+		blockchainIndicesFileName(parameters::CRYPTONOTE_BLOCKCHAIN_INDICES_FILENAME);
+		testnetFilenamePrefix(parameters::TESTNET_FILENAME_PREFIX);
 
 		testnet(false);
 	}

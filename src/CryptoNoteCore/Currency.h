@@ -93,7 +93,8 @@ public:
   const std::string& blocksCacheFileName() const { return m_blocksCacheFileName; }
   const std::string& blockIndexesFileName() const { return m_blockIndexesFileName; }
   const std::string& txPoolFileName() const { return m_txPoolFileName; }
-  const std::string& blockchinIndicesFileName() const { return m_blockchinIndicesFileName; }
+  const std::string& blockchainIndicesFileName() const { return m_blockchainIndicesFileName; }
+  const std::string& testnetFilenamePrefix() const { return m_testnetFilenamePrefix; }
 
   bool isTestnet() const { return m_testnet; }
 
@@ -194,7 +195,8 @@ private:
   std::string m_blocksCacheFileName;
   std::string m_blockIndexesFileName;
   std::string m_txPoolFileName;
-  std::string m_blockchinIndicesFileName;
+  std::string m_blockchainIndicesFileName;
+  std::string m_testnetFilenamePrefix;
 
   static const std::vector<uint64_t> PRETTY_AMOUNTS;
 
@@ -273,7 +275,8 @@ public:
   CurrencyBuilder& blocksCacheFileName(const std::string& val) { m_currency.m_blocksCacheFileName = val; return *this; }
   CurrencyBuilder& blockIndexesFileName(const std::string& val) { m_currency.m_blockIndexesFileName = val; return *this; }
   CurrencyBuilder& txPoolFileName(const std::string& val) { m_currency.m_txPoolFileName = val; return *this; }
-  CurrencyBuilder& blockchinIndicesFileName(const std::string& val) { m_currency.m_blockchinIndicesFileName = val; return *this; }
+  CurrencyBuilder& blockchainIndicesFileName(const std::string& val) { m_currency.m_blockchainIndicesFileName = val; return *this; }
+  CurrencyBuilder& testnetFilenamePrefix(const std::string& val) { m_currency.m_testnetFilenamePrefix = val; return *this; }
 
   CurrencyBuilder& testnet(bool val) { m_currency.m_testnet = val; return *this; }
 

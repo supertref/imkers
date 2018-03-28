@@ -90,6 +90,7 @@ const char     CRYPTONOTE_POOLDATA_FILENAME[]                = "poolstate.bin";
 const char     P2P_NET_DATA_FILENAME[]                       = "p2pstate.bin";
 const char     CRYPTONOTE_BLOCKCHAIN_INDICES_FILENAME[]      = "blockchainindices.dat";
 const char     MINER_CONFIG_FILE_NAME[]                      = "miner_conf.json";
+const char		 TESTNET_FILENAME_PREFIX[]										 = "testnet_";
 } // parameters
 
 const char     CRYPTONOTE_NAME[]                             = "niobio";
