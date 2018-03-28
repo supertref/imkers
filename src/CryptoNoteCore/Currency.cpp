@@ -75,8 +75,6 @@ namespace CryptoNote {
 		}
 
 		if (isTestnet()) {
-			m_upgradeHeightV2 = 0;
-			m_upgradeHeightV3 = static_cast<uint32_t>(-1);
 			m_blocksFileName = "testnet_" + m_blocksFileName;
 			m_blocksCacheFileName = "testnet_" + m_blocksCacheFileName;
 			m_blockIndexesFileName = "testnet_" + m_blockIndexesFileName;
@@ -540,7 +538,7 @@ namespace CryptoNote {
 			if (LWMA < T / 4)
 				LWMA = T / 4;
 			nextDiff = static_cast<uint64_t>(harmonicMeanDiff * T / LWMA * adjust);
-			return 20;
+			return 100;
 			//return nextDiff;
 		}
 
@@ -585,7 +583,7 @@ namespace CryptoNote {
 		if (nextDiffZ <= 100000) {
 			nextDiffZ = 100000;
 		}
-		return 20;
+		return 100;
 		//return nextDiffZ;
 	}
 
@@ -630,7 +628,7 @@ namespace CryptoNote {
 		if (high != 0 || low + timeSpan - 1 < low) {
 			return 0;
 		}
-		return 20;
+		return 100;
 		//return (low + timeSpan - 1) / timeSpan;
 	}
 

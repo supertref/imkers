@@ -75,8 +75,8 @@ const size_t   FUSION_TX_MIN_INPUT_COUNT                     = 12;
 const size_t   FUSION_TX_MIN_IN_OUT_COUNT_RATIO              = 4;
 
 const uint32_t UPGRADE_HEIGHT_V2                             = 1;
-const uint32_t UPGRADE_HEIGHT_V3                             = 10;
-const uint32_t UPGRADE_HEIGHT_V4                             = 20;
+const uint32_t UPGRADE_HEIGHT_V3                             = 30;
+const uint32_t UPGRADE_HEIGHT_V4                             = -1;
 const unsigned UPGRADE_VOTING_THRESHOLD											 = 90;   // percent
 const uint32_t   UPGRADE_VOTING_WINDOW                       = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
 const uint32_t   UPGRADE_WINDOW                              = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
@@ -107,8 +107,8 @@ const size_t   BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT        =  10000;  //by def
 const size_t   BLOCKS_SYNCHRONIZING_DEFAULT_COUNT            =  128;    //by default, blocks count in blocks downloading
 const size_t   COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT         =  1000;
 
-const int      P2P_DEFAULT_PORT                              =  9000;
-const int      RPC_DEFAULT_PORT                              =  9001;
+const int      P2P_DEFAULT_PORT                              =  8313;
+const int      RPC_DEFAULT_PORT                              =  8314;
 
 const size_t   P2P_LOCAL_WHITE_PEERLIST_LIMIT                =  1000;
 const size_t   P2P_LOCAL_GRAY_PEERLIST_LIMIT                 =  5000;
@@ -126,14 +126,12 @@ const size_t   P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT          = 5000;          //
 const char     P2P_STAT_TRUSTED_PUB_KEY[]                    = "";
 
 const char* const SEED_NODES[] = {
-	"testnet-nbr-01.niobioco.in:9000",
-	"remote-nbr-hydra.niobioco.in:9000"
-/*	"45.55.141.227:8313",
+	"remote-nbr-hydra.niobioco.in:8313",
+	"45.55.141.227:8313",
 	"138.197.222.188:8313",
 	"35.227.102.144:8313",
 	"66.70.167.192:8313",
 	"192.99.133.153:8313"
-	*/
 };
 
 struct CheckpointData {
@@ -142,7 +140,6 @@ struct CheckpointData {
 };
 
 const std::initializer_list<CheckpointData> CHECKPOINTS = {
-	/*
 	{ 19111, "80a25bf8b24f6b286d81d3fb9f65a3dd55c9fe1d508b3d463fa1c0512e45af6f" },
 	{ 19112, "7a0a41f6ccbf72b47a21841b8e876f29877bb57aa15d7adda27c757e77fc7021" },
 	{ 24758, "ef7b7c3803df58e06b21dde88c252569f118cda2fafeae9b56c6061e7c4c18eb" },
@@ -192,8 +189,6 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
 	{ 47329, "dbe612e290285c5c5a80f496692be4a6e49c09abee1f50455563ad0a256e748b" },
 	{ 47330, "924feb71a2c589718e8c8a922d9cf5e3ad3163441e4c975bbf41e413481342c2" },
 	{ 55796, "57669ca842c749dea8d50eded31f3b7082b9e5482b73fb9ce60aa1d431e49dea" }
-*/
-
 };
 
 } // CryptoNote
