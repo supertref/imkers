@@ -54,8 +54,8 @@ const uint64_t DEFAULT_DUST_THRESHOLD                        = UINT64_C(1000);
 const uint64_t EXPECTED_NUMBER_OF_BLOCKS_PER_DAY             = 24 * 60 * 60 / DIFFICULTY_TARGET;
 const size_t   DIFFICULTY_WINDOW                             = 36; //EXPECTED_NUMBER_OF_BLOCKS_PER_DAY; // blocks
 const size_t   DIFFICULTY_WINDOW_V2                          = 36; //17; // blocks
-const size_t   DIFFICULTY_WINDOW_V4                          = 67; // blocks
-const size_t   DIFFICULTY_CUT                                = 0; //60;  // timestamps to cut after sorting
+const size_t   DIFFICULTY_WINDOW_V4                          = 61; // blocks
+const size_t   DIFFICULTY_CUT                                = 0; // timestamps to cut after sorting
 const size_t   DIFFICULTY_LAG                                = 0; //15;  // !!!
 static_assert(2 * DIFFICULTY_CUT <= DIFFICULTY_WINDOW - 2, "Bad DIFFICULTY_WINDOW or DIFFICULTY_CUT");
 
@@ -90,7 +90,7 @@ const char     CRYPTONOTE_POOLDATA_FILENAME[]                = "poolstate.bin";
 const char     P2P_NET_DATA_FILENAME[]                       = "p2pstate.bin";
 const char     CRYPTONOTE_BLOCKCHAIN_INDICES_FILENAME[]      = "blockchainindices.dat";
 const char     MINER_CONFIG_FILE_NAME[]                      = "miner_conf.json";
-const char		 TESTNET_FILENAME_PREFIX[]										 = "testnet_";
+const char     TESTNET_FILENAME_PREFIX[]                     = "testnet_";
 } // parameters
 
 const char     CRYPTONOTE_NAME[]                             = "niobio";
