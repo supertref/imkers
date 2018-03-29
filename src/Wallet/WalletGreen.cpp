@@ -57,6 +57,7 @@ using namespace Common;
 using namespace Crypto;
 using namespace CryptoNote;
 using namespace Logging;
+#define BLOCK_HEIGHT_ALIGNMENT_FUTURE_TIMESTAMP 71500
 
 namespace {
 
@@ -942,7 +943,14 @@ std::string WalletGreen::createAddress(const Crypto::PublicKey& spendPublicKey) 
 }
 
 std::string WalletGreen::doCreateAddress(const Crypto::PublicKey& spendPublicKey, const Crypto::SecretKey& spendSecretKey, uint64_t creationTimestamp) {
-  assert(creationTimestamp <= std::numeric_limits<uint64_t>::max() - m_currency.blockFutureTimeLimit());
+  uint64_t futureTimestampLimit;
+  if (m_currency.isTestnet() || m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT_FUTURE_TIMESTAMP) {
+    futureTimestampLimit = m_currency.blockFutureTimeLimitV4();
+  } else {
+    futureTimestampLimit = m_currency.blockFutureTimeLimit();
+  }
+
+  assert(creationTimestamp <= std::numeric_limits<uint64_t>::max() - futureTimestampLimit);
 
   throwIfNotInitialized();
   throwIfStopped();
@@ -954,7 +962,7 @@ std::string WalletGreen::doCreateAddress(const Crypto::PublicKey& spendPublicKey
     address = addWallet(spendPublicKey, spendSecretKey, creationTimestamp);
     auto currentTime = static_cast<uint64_t>(time(nullptr));
 
-    if (creationTimestamp + m_currency.blockFutureTimeLimit() < currentTime) {
+    if (creationTimestamp + futureTimestampLimit < currentTime) {
       save(WalletSaveLevel::SAVE_KEYS_AND_TRANSACTIONS, m_extra);
       shutdown();
       load(m_path, m_password);
@@ -1878,7 +1886,7 @@ bool WalletGreen::adjustTransfer(size_t transactionId, size_t firstTransferIdx, 
           it->second.amount = amount;
           updated = true;
         }
-        
+
         firstAddressTransferFound = true;
         ++it;
       }
@@ -3048,7 +3056,7 @@ std::vector<WalletGreen::OutputToTransfer> WalletGreen::pickRandomFusionInputs(c
       break;
     }
   }
-  
+
   if (bucketNumberIndex == bucketNumbers.size()) {
     return {};
   }
@@ -3060,7 +3068,7 @@ std::vector<WalletGreen::OutputToTransfer> WalletGreen::pickRandomFusionInputs(c
   for (size_t i = 0; i < selectedBucket; ++i) {
     lowerBound *= 10;
   }
-   
+
   uint64_t upperBound = selectedBucket == std::numeric_limits<uint64_t>::digits10 ? UINT64_MAX : lowerBound * 10;
   std::vector<WalletGreen::OutputToTransfer> selectedOuts;
   selectedOuts.reserve(bucketSizes[selectedBucket]);
@@ -3086,7 +3094,7 @@ std::vector<WalletGreen::OutputToTransfer> WalletGreen::pickRandomFusionInputs(c
   }
 
   std::sort(trimmedSelectedOuts.begin(), trimmedSelectedOuts.end(), outputsSortingFunction);
-  return trimmedSelectedOuts;  
+  return trimmedSelectedOuts;
 }
 
 std::vector<TransactionsInBlockInfo> WalletGreen::getTransactionsInBlocks(uint32_t blockIndex, size_t count) const {

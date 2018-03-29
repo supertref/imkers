@@ -524,7 +524,7 @@ namespace CryptoNote {
 			const double_t adjust = 0.998;
 			// The divisor k normalizes LWMA.
 			const double_t k = N * (N + 1) / 2;
-			double_t LWMA(0), sum_inverse_D(0), harmonic_mean_D(0);
+			double_t LWMA(0), sum_inverse_D(0), harmonic_mean_D(0), nextDifficulty(0);
 			int64_t solveTime(0);
 			uint64_t difficulty(0), next_difficulty(0);
 			// Loop through N most recent blocks.
@@ -542,12 +542,11 @@ namespace CryptoNote {
 			if (static_cast<int64_t>(std::round(LWMA)) < T / 20)
 				LWMA = static_cast<double_t>(T / 20);
 			harmonic_mean_D = N / sum_inverse_D * adjust;
-			uint64_t low, high;
-			low = mul128(static_cast<uint64_t>(harmonic_mean_D), T, &high);
-			if (high != 0) {
-				return 0;
+			nextDifficulty = harmonic_mean_D * T / LWMA;
+			next_difficulty = static_cast<uint64_t>(nextDifficulty);
+			if (next_difficulty < 100000) {
+				next_difficulty = 100000;
 			}
-			next_difficulty = low / static_cast<int64_t>(std::round(LWMA));
 			return next_difficulty;
 		}
 
@@ -740,6 +739,7 @@ namespace CryptoNote {
 
 		timestampCheckWindow(parameters::BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW);
 		blockFutureTimeLimit(parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT);
+		blockFutureTimeLimitV4(parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V4);
 
 		moneySupply(parameters::MONEY_SUPPLY);
 		emissionSpeedFactor(parameters::EMISSION_SPEED_FACTOR);

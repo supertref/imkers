@@ -43,6 +43,7 @@ public:
 
   size_t timestampCheckWindow() const { return m_timestampCheckWindow; }
   uint64_t blockFutureTimeLimit() const { return m_blockFutureTimeLimit; }
+  uint64_t blockFutureTimeLimitV4() const { return m_blockFutureTimeLimitV4; }
 
   uint64_t moneySupply() const { return m_moneySupply; }
   unsigned int emissionSpeedFactor() const { return m_emissionSpeedFactor; }
@@ -149,6 +150,7 @@ private:
 
   size_t m_timestampCheckWindow;
   uint64_t m_blockFutureTimeLimit;
+  uint64_t m_blockFutureTimeLimitV4;
 
   uint64_t m_moneySupply;
   unsigned int m_emissionSpeedFactor;
@@ -230,6 +232,7 @@ public:
 
   CurrencyBuilder& timestampCheckWindow(size_t val) { m_currency.m_timestampCheckWindow = val; return *this; }
   CurrencyBuilder& blockFutureTimeLimit(uint64_t val) { m_currency.m_blockFutureTimeLimit = val; return *this; }
+  CurrencyBuilder& blockFutureTimeLimitV4(uint64_t val) { m_currency.m_blockFutureTimeLimitV4 = val; return *this; }
 
   CurrencyBuilder& moneySupply(uint64_t val) { m_currency.m_moneySupply = val; return *this; }
   CurrencyBuilder& emissionSpeedFactor(unsigned int val);
