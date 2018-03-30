@@ -519,7 +519,8 @@ namespace CryptoNote {
 		size_t n = timestamps.size();
 		assert(n == cumulativeDifficulties.size());
 		assert(n <= CryptoNote::parameters::DIFFICULTY_WINDOW_V4);
-		if (n < (N + 1)) return 1;
+		if (n <= 2) return 1;
+		if (n < (N + 1)) return 100000;
 		// To get an average solvetime to within +/- ~0.1%, use an adjustment factor.
 		const double_t adjust = 0.998;
 		// The divisor k normalizes LWMA.
