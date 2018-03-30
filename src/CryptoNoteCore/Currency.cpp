@@ -519,36 +519,36 @@ namespace CryptoNote {
 		size_t n = timestamps.size();
 		assert(n == cumulativeDifficulties.size());
 		assert(n <= CryptoNote::parameters::DIFFICULTY_WINDOW_V4);
-		if (n <= 1) return 1;
-			// To get an average solvetime to within +/- ~0.1%, use an adjustment factor.
-			const double_t adjust = 0.998;
-			// The divisor k normalizes LWMA.
-			const double_t k = N * (N + 1) / 2;
-			double_t LWMA(0), sum_inverse_D(0), harmonic_mean_D(0), nextDifficulty(0);
-			int64_t solveTime(0);
-			uint64_t difficulty(0), next_difficulty(0);
-			// Loop through N most recent blocks.
-			for (int64_t i = 1; i <= N; i++) {
-				solveTime = static_cast<int64_t>(timestamps[i]) - static_cast<int64_t>(timestamps[i - 1]);
-				solveTime = std::min<int64_t>((T * 7), std::max<int64_t>(solveTime, (-6 * T)));
-				difficulty = cumulativeDifficulties[i] - cumulativeDifficulties[i - 1];
-				LWMA += solveTime * i / k;
-				sum_inverse_D += 1 / static_cast<double_t>(difficulty);
-			}
-			//std::cout << "N: " << j << std::endl;
-			// Keep LWMA reasonable in case a coin does not have appropriate limits on
-			// old timestamps (like bitcoin's MTP) which could cause LWMA to go negative.
-			// Keep LWMA sane in case something unforeseen occurs.
-			if (static_cast<int64_t>(std::round(LWMA)) < T / 20)
-				LWMA = static_cast<double_t>(T / 20);
-			harmonic_mean_D = N / sum_inverse_D * adjust;
-			nextDifficulty = harmonic_mean_D * T / LWMA;
-			next_difficulty = static_cast<uint64_t>(nextDifficulty);
-			if (next_difficulty < 100000) {
-				next_difficulty = 100000;
-			}
-			return next_difficulty;
+		if (n < (N + 1)) return 1;
+		// To get an average solvetime to within +/- ~0.1%, use an adjustment factor.
+		const double_t adjust = 0.998;
+		// The divisor k normalizes LWMA.
+		const double_t k = N * (N + 1) / 2;
+		double_t LWMA(0), sum_inverse_D(0), harmonic_mean_D(0), nextDifficulty(0);
+		int64_t solveTime(0);
+		uint64_t difficulty(0), next_difficulty(0);
+		// Loop through N most recent blocks.
+		for (int64_t i = 1; i <= N; i++) {
+			solveTime = static_cast<int64_t>(timestamps[i]) - static_cast<int64_t>(timestamps[i - 1]);
+			solveTime = std::min<int64_t>((T * 7), std::max<int64_t>(solveTime, (-6 * T)));
+			difficulty = cumulativeDifficulties[i] - cumulativeDifficulties[i - 1];
+			LWMA += solveTime * i / k;
+			sum_inverse_D += 1 / static_cast<double_t>(difficulty);
 		}
+		//std::cout << "N: " << j << std::endl;
+		// Keep LWMA reasonable in case a coin does not have appropriate limits on
+		// old timestamps (like bitcoin's MTP) which could cause LWMA to go negative.
+		// Keep LWMA sane in case something unforeseen occurs.
+		if (static_cast<int64_t>(std::round(LWMA)) < T / 20)
+		LWMA = static_cast<double_t>(T / 20);
+		harmonic_mean_D = N / sum_inverse_D * adjust;
+		nextDifficulty = harmonic_mean_D * T / LWMA;
+		next_difficulty = static_cast<uint64_t>(nextDifficulty);
+		if (next_difficulty < 100000) {
+			next_difficulty = 100000;
+		}
+		return next_difficulty;
+	}
 
 	difficulty_type Currency::nextDifficultyV2(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
 		size_t m_difficultyWindow_2 = CryptoNote::parameters::DIFFICULTY_WINDOW_V2;
