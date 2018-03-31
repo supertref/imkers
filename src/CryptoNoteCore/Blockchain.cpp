@@ -1738,7 +1738,7 @@ bool Blockchain::check_block_timestamp_main(const Block& b) {
   }
   if (b.timestamp > get_adjusted_time() + futureTimestampLimit) {
     logger(INFO, BRIGHT_WHITE) <<
-      "Timestamp of block with id: " << get_block_hash(b) << ", " << b.timestamp << ", bigger than adjusted time + 2 hours";
+      "Timestamp of block with id: " << get_block_hash(b) << ", " << b.timestamp << ", bigger than adjusted time plus future time limit";
     return false;
   }
 
