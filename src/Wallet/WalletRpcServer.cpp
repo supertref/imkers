@@ -48,19 +48,19 @@ void wallet_rpc_server::init_options(boost::program_options::options_description
 }
 //------------------------------------------------------------------------------------------------------------------------------
 wallet_rpc_server::wallet_rpc_server(
-  System::Dispatcher& dispatcher, 
-  Logging::ILogger& log, 
+  System::Dispatcher& dispatcher,
+  Logging::ILogger& log,
   CryptoNote::IWalletLegacy&w,
-  CryptoNote::INode& n, 
-  CryptoNote::Currency& currency, 
+  CryptoNote::INode& n,
+  CryptoNote::Currency& currency,
   const std::string& walletFile)
-  : 
-  HttpServer(dispatcher, log), 
-  logger(log, "WalletRpc"), 
-  m_dispatcher(dispatcher), 
-  m_stopComplete(dispatcher), 
+  :
+  HttpServer(dispatcher, log),
+  logger(log, "WalletRpc"),
+  m_dispatcher(dispatcher),
+  m_stopComplete(dispatcher),
   m_wallet(w),
-  m_node(n), 
+  m_node(n),
   m_currency(currency),
   m_walletFilename(walletFile) {
 }
@@ -84,7 +84,7 @@ bool wallet_rpc_server::handle_command_line(const boost::program_options::variab
   m_bind_ip = command_line::get_arg(vm, arg_rpc_bind_ip);
   m_port = command_line::get_arg(vm, arg_rpc_bind_port);
   m_rpcUser = command_line::get_arg(vm, arg_rpc_user);
-  m_rpcPassword = command_line::get_arg(vm, arg_rpc_password);  
+  m_rpcPassword = command_line::get_arg(vm, arg_rpc_password);
   return true;
 }
 //------------------------------------------------------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ bool wallet_rpc_server::on_transfer(const wallet_rpc::COMMAND_RPC_TRANSFER::requ
 
     Crypto::Hash payment_id;
     if (!CryptoNote::parsePaymentId(payment_id_str, payment_id)) {
-      throw JsonRpc::JsonRpcError(WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID, 
+      throw JsonRpc::JsonRpcError(WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID,
         "Payment id has invalid format: \"" + payment_id_str + "\", expected 64-character string");
     }
 
@@ -250,6 +250,13 @@ bool wallet_rpc_server::on_get_payments(const wallet_rpc::COMMAND_RPC_GET_PAYMEN
 bool wallet_rpc_server::on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANSFERS::request& req, wallet_rpc::COMMAND_RPC_GET_TRANSFERS::response& res) {
   res.transfers.clear();
   size_t transactionsCount = m_wallet.getTransactionCount();
+  uint64_t bc_height;
+  try {
+    bc_height = m_node.getKnownBlockCount();
+  }
+  catch (std::exception &e) {
+    throw JsonRpc::JsonRpcError(WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR, std::string("Failed to get blockchain height: ") + e.what());
+  }
   for (size_t trantransactionNumber = 0; trantransactionNumber < transactionsCount; ++trantransactionNumber) {
     WalletLegacyTransaction txInfo;
     m_wallet.getTransaction(trantransactionNumber, txInfo);
@@ -276,6 +283,7 @@ bool wallet_rpc_server::on_get_transfers(const wallet_rpc::COMMAND_RPC_GET_TRANS
     transfer.blockIndex = txInfo.blockHeight;
     transfer.unlockTime = txInfo.unlockTime;
     transfer.paymentId = "";
+    transfer.confirmations	 = (txInfo.blockHeight != UNCONFIRMED_TRANSACTION_GLOBAL_OUTPUT_INDEX ? bc_height - txInfo.blockHeight : 0);
 
     std::vector<uint8_t> extraVec;
     extraVec.reserve(txInfo.extra.size());
