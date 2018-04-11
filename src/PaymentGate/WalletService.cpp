@@ -734,7 +734,11 @@ std::error_code WalletService::getTransaction(const std::string& transactionHash
     }
 
 	TransactionRpcInfo tempTrans = convertTransactionWithTransfersToTransactionRpcInfo(transactionWithTransfers);
-	tempTrans.confirmations = wallet.getBlockCount() - transactionWithTransfers.transaction.blockHeight;
+  if(tempTrans.blockIndex == CryptoNote::UNCONFIRMED_TRANSACTION_GLOBAL_OUTPUT_INDEX) {
+    tempTrans.confirmations = 0;
+  } else {
+    tempTrans.confirmations = wallet.getBlockCount() - transactionWithTransfers.transaction.blockHeight;
+  }
 	transaction = tempTrans;
 
   } catch (std::system_error& x) {
