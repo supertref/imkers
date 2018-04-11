@@ -80,6 +80,7 @@ namespace CryptoNote {
 			m_blockIndexesFileName = m_testnetFilenamePrefix + m_blockIndexesFileName;
 			m_txPoolFileName = m_testnetFilenamePrefix + m_txPoolFileName;
 			m_blockchainIndicesFileName = m_testnetFilenamePrefix + m_blockchainIndicesFileName;
+			m_minedMoneyUnlockWindow = CryptoNote::parameters::TESTNET_CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
 		}
 
 		return true;
@@ -91,7 +92,6 @@ namespace CryptoNote {
 		// Hard code coinbase tx in genesis block, because "tru" generating tx use random, but genesis should be always the same
 		std::string genesisCoinbaseTxHex = GENESIS_COINBASE_TX_HEX;
 		BinaryArray minerTxBlob;
-
 		bool r =
 			fromHex(genesisCoinbaseTxHex, minerTxBlob) &&
 			fromBinaryArray(m_genesisBlock.baseTransaction, minerTxBlob);
@@ -107,6 +107,7 @@ namespace CryptoNote {
 		m_genesisBlock.nonce = 70;
 		if (m_testnet) {
 			++m_genesisBlock.nonce;
+			m_genesisBlock.baseTransaction.unlockTime = CryptoNote::parameters::TESTNET_CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW;
 		}
 		//miner::find_nonce_for_given_block(bl, 1, 0);
 
