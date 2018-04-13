@@ -471,12 +471,14 @@ bool Blockchain::init(const std::string& config_folder, bool load_existing) {
     }
   }
 
+  for (const auto& cp : CryptoNote::CHECKPOINTS) {
+    m_checkpoints.add_checkpoint(cp.height, cp.blockId);
+  }
   uint32_t lastValidCheckpointHeight = 0;
   if (!checkCheckpoints(lastValidCheckpointHeight)) {
     logger(WARNING, BRIGHT_YELLOW) << "Invalid checkpoint found. Rollback blockchain to height=" << lastValidCheckpointHeight;
     rollbackBlockchainTo(lastValidCheckpointHeight);
   }
-
   if (!m_upgradeDetectorV2.init() || !m_upgradeDetectorV3.init()  || !m_upgradeDetectorV4.init()) {
     logger(ERROR, BRIGHT_RED) << "Failed to initialize upgrade detector";
     return false;
@@ -1984,7 +1986,7 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
     }
   } else {
     if (!m_currency.checkProofOfWork(m_cn_context, blockData, currentDifficulty, proof_of_work)) {
-	  if (m_currency.isTestnet() || m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT) {
+	  if (m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT) {
 		  logger(INFO, BRIGHT_WHITE) <<
 			  "Block " << blockHash << ", has too weak proof of work: " << proof_of_work << ", expected difficulty: " << currentDifficulty;
 		  bvc.m_verifivation_failed = true;
@@ -2049,12 +2051,12 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
   uint64_t reward = 0;
   uint64_t already_generated_coins = m_blocks.empty() ? 0 : m_blocks.back().already_generated_coins;
   if (!validate_miner_transaction(blockData, static_cast<uint32_t>(m_blocks.size()), cumulative_block_size, already_generated_coins, fee_summary, reward, emissionChange)) {
-	if (m_currency.isTestnet() || m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT) {
-		logger(INFO, BRIGHT_WHITE) << "Block " << blockHash << " has invalid miner transaction";
-		bvc.m_verifivation_failed = true;
-		popTransactions(block, minerTransactionHash);
-		return false;
-	}
+  	if (m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT) {
+  		logger(INFO, BRIGHT_WHITE) << "Block " << blockHash << " has invalid miner transaction";
+  		bvc.m_verifivation_failed = true;
+  		popTransactions(block, minerTransactionHash);
+  		return false;
+  	}
   }
 
   block.height = static_cast<uint32_t>(m_blocks.size());

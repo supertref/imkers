@@ -500,7 +500,6 @@ bool CryptoNoteProtocolHandler::request_missing_objects(CryptoNoteConnectionCont
     NOTIFY_REQUEST_GET_OBJECTS::request req;
     size_t count = 0;
     auto it = context.m_needed_objects.begin();
-
     while (it != context.m_needed_objects.end() && count < BLOCKS_SYNCHRONIZING_DEFAULT_COUNT) {
       if (!(check_having_blocks && m_core.have_block(*it))) {
         req.blocks.push_back(*it);
@@ -512,7 +511,6 @@ bool CryptoNoteProtocolHandler::request_missing_objects(CryptoNoteConnectionCont
     logger(Logging::TRACE) << context << "-->>NOTIFY_REQUEST_GET_OBJECTS: blocks.size()=" << req.blocks.size() << ", txs.size()=" << req.txs.size();
     post_notify<NOTIFY_REQUEST_GET_OBJECTS>(*m_p2p, req, context);
   } else if (context.m_last_response_height < context.m_remote_blockchain_height - 1) {//we have to fetch more objects ids, request blockchain entry
-
     NOTIFY_REQUEST_CHAIN::request r = boost::value_initialized<NOTIFY_REQUEST_CHAIN::request>();
     r.block_ids = m_core.buildSparseChain();
     logger(Logging::TRACE) << context << "-->>NOTIFY_REQUEST_CHAIN: m_block_ids.size()=" << r.block_ids.size();
@@ -553,7 +551,6 @@ bool CryptoNoteProtocolHandler::on_connection_synchronized() {
       << "Use \"help\" command to see the list of available commands." << ENDL
       << "**********************************************************************";
     m_core.on_synchronized();
-
     uint32_t height;
     Crypto::Hash hash;
     m_core.get_blockchain_top(height, hash);

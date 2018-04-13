@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
 
     if (!r)
       return 1;
-  
+
     auto modulePath = Common::NativePathToGeneric(argv[0]);
     auto cfgLogFile = Common::NativePathToGeneric(command_line::get_arg(vm, arg_log_file));
 

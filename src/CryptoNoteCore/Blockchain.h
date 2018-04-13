@@ -74,6 +74,7 @@ namespace CryptoNote {
     std::vector<Crypto::Hash> getBlockIds(uint32_t startHeight, uint32_t maxCount);
 
     void setCheckpoints(Checkpoints&& chk_pts) { m_checkpoints = chk_pts; }
+
     bool getBlocks(uint32_t start_offset, uint32_t count, std::list<Block>& blocks, std::list<Transaction>& txs);
     bool getBlocks(uint32_t start_offset, uint32_t count, std::list<Block>& blocks);
     bool getAlternativeBlocks(std::list<Block>& blocks);
