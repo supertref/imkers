@@ -2069,9 +2069,9 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
   auto block_processing_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - blockProcessingStart).count();
 
   logger(INFO) <<
-    "+++++ BLOCK SUCCESSFULLY ADDED" << ENDL << "id: " << blockHash
-    << ENDL << "PoW: " << proof_of_work
-    << ENDL << "HEIGHT " << block.height << ", difficulty: " << currentDifficulty
+    "+++++ BLOCK SUCCESSFULLY ADDED" << "Height: " << block.height << ", Hash: " << blockHash;
+    logger(TRACE) <<
+    "PoW: " << proof_of_work << ", difficulty: " << currentDifficulty
     << ENDL << "block reward: " << m_currency.formatAmount(reward) << ", fee: " << m_currency.formatAmount(fee_summary)
     << ", coinbase_blob_size: " << coinbase_blob_size << ", cumulative size: " << cumulative_block_size
     << ", " << block_processing_time << "(" << target_calculating_time << "/" << longhash_calculating_time << ")ms";
