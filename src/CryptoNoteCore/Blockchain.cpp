@@ -1881,7 +1881,7 @@ bool Blockchain::addNewBlock(const Block& bl_, block_verification_context& bvc) 
       bvc.m_added_to_main_chain = false;
       add_result = handle_alternative_block(bl, id, bvc);
     } else {
-      logger(INFO) << "calling pushBlock() = " << id;
+      logger(TRACE) << "calling pushBlock() = " << id;
       add_result = pushBlock(bl, bvc);
       if (add_result) {
         sendMessage(BlockchainMessage(NewBlockMessage(id)));
@@ -2069,8 +2069,8 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
   auto block_processing_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - blockProcessingStart).count();
 
   logger(INFO) <<
-    "+++++ BLOCK SUCCESSFULLY ADDED" << "Height: " << block.height << ", Hash: " << blockHash;
-    logger(TRACE) <<
+    "+++++ BLOCK SUCCESSFULLY ADDED at " << "Height: " << block.height << ", Hash: " << blockHash;
+  logger(TRACE) <<
     "PoW: " << proof_of_work << ", difficulty: " << currentDifficulty
     << ENDL << "block reward: " << m_currency.formatAmount(reward) << ", fee: " << m_currency.formatAmount(fee_summary)
     << ", coinbase_blob_size: " << coinbase_blob_size << ", cumulative size: " << cumulative_block_size
