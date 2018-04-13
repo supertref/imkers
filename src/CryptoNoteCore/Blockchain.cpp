@@ -471,9 +471,6 @@ bool Blockchain::init(const std::string& config_folder, bool load_existing) {
     }
   }
 
-  for (const auto& cp : CryptoNote::CHECKPOINTS) {
-    m_checkpoints.add_checkpoint(cp.height, cp.blockId);
-  }
   uint32_t lastValidCheckpointHeight = 0;
   if (!checkCheckpoints(lastValidCheckpointHeight)) {
     logger(WARNING, BRIGHT_YELLOW) << "Invalid checkpoint found. Rollback blockchain to height=" << lastValidCheckpointHeight;
