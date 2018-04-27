@@ -151,11 +151,18 @@ namespace CryptoNote {
 		uint64_t m_tailEmissionReward = CryptoNote::parameters::TAIL_EMISSION_REWARD;
 		uint64_t m_moneySupply = CryptoNote::parameters::MONEY_SUPPLY;
 		uint64_t m_emissionSpeedFactor = CryptoNote::parameters::EMISSION_SPEED_FACTOR;
+		uint64_t m_emissionSpeedFactorV5 = CryptoNote::parameters::EMISSION_SPEED_FACTOR_V5;
 
 		assert(alreadyGeneratedCoins <= m_moneySupply);
 		assert(m_emissionSpeedFactor > 0 && m_emissionSpeedFactor <= 8 * sizeof(uint64_t));
+		assert(m_emissionSpeedFactorV5 > 0 && m_emissionSpeedFactorV5 <= 8 * sizeof(uint64_t));
 
-		uint64_t baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactor;
+		if (blockMajorVersion >= BLOCK_MAJOR_VERSION_5) {
+			uint64_t baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5;
+		} else {
+			uint64_t baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactor;
+		}
+
 		if (alreadyGeneratedCoins == 0 && m_genesisBlockReward != 0) {
 			baseReward = m_genesisBlockReward;
 			std::cout << "Genesis block reward: " << baseReward << std::endl;
@@ -749,6 +756,7 @@ namespace CryptoNote {
 
 		moneySupply(parameters::MONEY_SUPPLY);
 		emissionSpeedFactor(parameters::EMISSION_SPEED_FACTOR);
+		emissionSpeedFactorV5(parameters::EMISSION_SPEED_FACTOR_V5);
 		cryptonoteCoinVersion(parameters::CRYPTONOTE_COIN_VERSION);
 
 		rewardBlocksWindow(parameters::CRYPTONOTE_REWARD_BLOCKS_WINDOW);
@@ -804,12 +812,22 @@ namespace CryptoNote {
 		m_currency.constructMinerTx(1, 0, 0, 0, 0, 0, ac, tx); // zero fee in genesis
 		return tx;
 	}
+
 	CurrencyBuilder& CurrencyBuilder::emissionSpeedFactor(unsigned int val) {
 		if (val <= 0 || val > 8 * sizeof(uint64_t)) {
 			throw std::invalid_argument("val at emissionSpeedFactor()");
 		}
 
 		m_currency.m_emissionSpeedFactor = val;
+		return *this;
+	}
+
+	CurrencyBuilder& CurrencyBuilder::emissionSpeedFactorV5(unsigned int val) {
+		if (val <= 0 || val > 8 * sizeof(uint64_t)) {
+			throw std::invalid_argument("val at emissionSpeedFactorV5()");
+		}
+
+		m_currency.m_emissionSpeedFactorV5 = val;
 		return *this;
 	}
 
