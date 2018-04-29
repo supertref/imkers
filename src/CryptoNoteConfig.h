@@ -131,7 +131,7 @@ const size_t   P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT          = 5000;          //
 const char     P2P_STAT_TRUSTED_PUB_KEY[]                    = "";
 
 const char* const SEED_NODES[] = {
-	"remote-nbr-hydra.niobioco.in:8313",
+	"173.249.38.45:8313",
 	"45.55.141.227:8313",
 	"138.197.222.188:8313",
 	"35.227.102.144:8313",
