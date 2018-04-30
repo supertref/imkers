@@ -34,6 +34,7 @@ const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT            = 60 * 60 * 2;
 const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V4         = DIFFICULTY_TARGET * 7;
 
 const size_t   BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW             = 60;
+const size_t   BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V5          = 11;
 
 // MONEY_SUPPLY - total number coins to be generated
 const uint64_t MONEY_SUPPLY                                  = UINT64_C(33600000000000000);
@@ -197,7 +198,8 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
 	{ 55796, "57669ca842c749dea8d50eded31f3b7082b9e5482b73fb9ce60aa1d431e49dea" },
 	{ 66568, "d3d2f05745ce8af6e71b190782e560362cbc62571ffce7fb7c4b5bd848e88ea1" },
 	{ 71714, "71af9b2599f0a44cdaa8be0dba5d78f4c23dbb3730d69ee217e6a8f0649f9592" },
-	{ 76072, "85313bc7fc25455f71ceab7660470b4bb6d22d6c72551f80a55308616d7ec19a" }
+	{ 76072, "85313bc7fc25455f71ceab7660470b4bb6d22d6c72551f80a55308616d7ec19a" },
+	{ 81895, "759d10ef6fcdd6f0b91ca59369d5c4cb0543102d054c421210bd57a4cbdae5dd" }
 };
 
 } // CryptoNote

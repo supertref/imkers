@@ -752,6 +752,7 @@ namespace CryptoNote {
 		minedMoneyUnlockWindow(parameters::CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW);
 
 		timestampCheckWindow(parameters::BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW);
+		timestampCheckWindowV5(parameters::BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V5);
 		blockFutureTimeLimit(parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT);
 		blockFutureTimeLimitV4(parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V4);
 
