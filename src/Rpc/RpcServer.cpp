@@ -214,6 +214,27 @@ bool RpcServer::isCoreReady() {
   return m_core.currency().isTestnet() || m_p2p.get_payload_object().isSynchronized();
 }
 
+bool RpcServer::setRpcBindToLoopback(const std::string ip) {
+  uint32_t v[4];
+  if (sscanf(ip.c_str(), "%d.%d.%d.%d", &v[0], &v[1], &v[2], &v[3]) != 4) {
+    m_rpc_bind_to_loopback = false;
+  }
+
+  for (int i = 0; i < 4; ++i) {
+    if (v[i] > 0xff) {
+      m_rpc_bind_to_loopback = false;
+    }
+  }
+  m_rpc_bind_to_loopback = v[0] == 127 ? (v[1] == 0 ? (v[2] == 0 ? (v[3] == 1 ? true : false) : false) : false) : false;
+  if(m_rpc_bind_to_loopback) {
+    logger(INFO) << "RPC server binded to loopback, you're not opened to the world. Very well.";
+  }
+  return true;
+}
+
+bool RpcServer::isTestnetOrRpcBindToLoopback() {
+  return m_core.currency().isTestnet() || m_rpc_bind_to_loopback;
+}
 //
 // Binary handlers
 //
@@ -590,6 +611,11 @@ bool RpcServer::f_on_blocks_limited_json(const F_COMMAND_RPC_GET_BLOCKS_LIST::re
   if (req_limit <= 0)  {
     throw JsonRpc::JsonRpcError{ CORE_RPC_ERROR_CODE_WRONG_PARAM,
       std::string("Limit cannot be negative or zero.")};
+  }
+
+  // Limit for opened RPC systems to prevent flood - you must use this method with your own backend
+  if(!isTestnetOrRpcBindToLoopback() && req_limit > 30) {
+    req_limit = 30;
   }
 
   if (req_height == 0)  {
