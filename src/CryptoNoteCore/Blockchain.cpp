@@ -733,7 +733,6 @@ difficulty_type Blockchain::getDifficultyForNextBlock() {
 
 uint64_t Blockchain::getBlockTimestamp(uint32_t height) {
   assert(height < m_blocks.size());
-  logger(INFO, BRIGHT_GREEN) << "getBlockTimestamp returned: " << m_blocks[height].bl.timestamp << " for height: " << height;
   return m_blocks[height].bl.timestamp;
 }
 
