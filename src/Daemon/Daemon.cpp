@@ -284,9 +284,10 @@ int main(int argc, char* argv[])
 
     logger(INFO) << "Starting core rpc server on address " << rpcConfig.getBindAddress();
     rpcServer.start(rpcConfig.bindIp, rpcConfig.bindPort);
-	rpcServer.restrictRPC(command_line::get_arg(vm, arg_restricted_rpc));
-	rpcServer.enableCors(command_line::get_arg(vm, arg_enable_cors));
-	rpcServer.setFeeAddress(command_line::get_arg(vm, arg_set_fee_address));
+    rpcServer.restrictRPC(command_line::get_arg(vm, arg_restricted_rpc));
+    rpcServer.enableCors(command_line::get_arg(vm, arg_enable_cors));
+    rpcServer.setFeeAddress(command_line::get_arg(vm, arg_set_fee_address));
+    rpcServer.setRpcBindToLoopback(rpcConfig.bindIp);
     logger(INFO) << "Core rpc server started ok";
 
     Tools::SignalHandler::install([&dch, &p2psrv] {

@@ -127,7 +127,10 @@ namespace CryptoNote {
 	}
 
 	uint32_t Currency::upgradeHeight(uint8_t majorVersion) const {
-		if (majorVersion == BLOCK_MAJOR_VERSION_4) {
+		if (majorVersion == BLOCK_MAJOR_VERSION_5) {
+			return m_upgradeHeightV5;
+		}
+		else if (majorVersion == BLOCK_MAJOR_VERSION_4) {
 			return m_upgradeHeightV4;
 		}
 		else if (majorVersion == BLOCK_MAJOR_VERSION_2) {
@@ -148,11 +151,19 @@ namespace CryptoNote {
 		uint64_t m_tailEmissionReward = CryptoNote::parameters::TAIL_EMISSION_REWARD;
 		uint64_t m_moneySupply = CryptoNote::parameters::MONEY_SUPPLY;
 		uint64_t m_emissionSpeedFactor = CryptoNote::parameters::EMISSION_SPEED_FACTOR;
+		uint64_t m_emissionSpeedFactorV5 = CryptoNote::parameters::EMISSION_SPEED_FACTOR_V5;
 
 		assert(alreadyGeneratedCoins <= m_moneySupply);
 		assert(m_emissionSpeedFactor > 0 && m_emissionSpeedFactor <= 8 * sizeof(uint64_t));
+		assert(m_emissionSpeedFactorV5 > 0 && m_emissionSpeedFactorV5 <= 8 * sizeof(uint64_t));
 
-		uint64_t baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactor;
+		uint64_t baseReward = 0;
+		if (blockMajorVersion >= BLOCK_MAJOR_VERSION_5) {
+			baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5;
+		} else {
+			baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactor;
+		}
+
 		if (alreadyGeneratedCoins == 0 && m_genesisBlockReward != 0) {
 			baseReward = m_genesisBlockReward;
 			std::cout << "Genesis block reward: " << baseReward << std::endl;
@@ -702,6 +713,7 @@ namespace CryptoNote {
 		case BLOCK_MAJOR_VERSION_2:
 		case BLOCK_MAJOR_VERSION_3:
 		case BLOCK_MAJOR_VERSION_4:
+		case BLOCK_MAJOR_VERSION_5:
 			return checkProofOfWorkV2(context, block, currentDiffic, proofOfWork);
 		}
 
@@ -740,11 +752,13 @@ namespace CryptoNote {
 		minedMoneyUnlockWindow(parameters::CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW);
 
 		timestampCheckWindow(parameters::BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW);
+		timestampCheckWindowV5(parameters::BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V5);
 		blockFutureTimeLimit(parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT);
 		blockFutureTimeLimitV4(parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V4);
 
 		moneySupply(parameters::MONEY_SUPPLY);
 		emissionSpeedFactor(parameters::EMISSION_SPEED_FACTOR);
+		emissionSpeedFactorV5(parameters::EMISSION_SPEED_FACTOR_V5);
 		cryptonoteCoinVersion(parameters::CRYPTONOTE_COIN_VERSION);
 
 		rewardBlocksWindow(parameters::CRYPTONOTE_REWARD_BLOCKS_WINDOW);
@@ -779,6 +793,7 @@ namespace CryptoNote {
 		upgradeHeightV2(parameters::UPGRADE_HEIGHT_V2);
 		upgradeHeightV3(parameters::UPGRADE_HEIGHT_V3);
 		upgradeHeightV4(parameters::UPGRADE_HEIGHT_V4);
+		upgradeHeightV5(parameters::UPGRADE_HEIGHT_V5);
 		upgradeVotingThreshold(parameters::UPGRADE_VOTING_THRESHOLD);
 		upgradeVotingWindow(parameters::UPGRADE_VOTING_WINDOW);
 		upgradeWindow(parameters::UPGRADE_WINDOW);
@@ -799,12 +814,22 @@ namespace CryptoNote {
 		m_currency.constructMinerTx(1, 0, 0, 0, 0, 0, ac, tx); // zero fee in genesis
 		return tx;
 	}
+
 	CurrencyBuilder& CurrencyBuilder::emissionSpeedFactor(unsigned int val) {
 		if (val <= 0 || val > 8 * sizeof(uint64_t)) {
 			throw std::invalid_argument("val at emissionSpeedFactor()");
 		}
 
 		m_currency.m_emissionSpeedFactor = val;
+		return *this;
+	}
+
+	CurrencyBuilder& CurrencyBuilder::emissionSpeedFactorV5(unsigned int val) {
+		if (val <= 0 || val > 8 * sizeof(uint64_t)) {
+			throw std::invalid_argument("val at emissionSpeedFactorV5()");
+		}
+
+		m_currency.m_emissionSpeedFactorV5 = val;
 		return *this;
 	}
 
