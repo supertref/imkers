@@ -47,7 +47,7 @@ extern "C" typedef void hash_f(const void *, size_t, char *);
 struct hash_func {
   const string name;
   hash_f &f;
-} hashes[] = {{"fast", Crypto::cn_fast_hash}, {"slow", slow_hash}, {"tree", hash_tree}};
+} hashes[] = {{"fast", Crypto::cn_fast_hash}, {"tree", hash_tree}};
 
 int main(int argc, char *argv[]) {
   hash_f *f;
@@ -71,9 +71,7 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
-  if (f == slow_hash) {
-    context = new Crypto::cn_context();
-  }
+
   input.open(argv[2], ios_base::in);
   for (;;) {
     ++test;
