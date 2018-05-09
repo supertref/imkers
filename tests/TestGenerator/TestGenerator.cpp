@@ -159,8 +159,8 @@ bool test_generator::constructBlock(CryptoNote::Block& blk, uint32_t height, con
 
   // Nonce search...
   blk.nonce = 0;
-  Crypto::cn_context context;
-  while (!miner::find_nonce_for_given_block(context, blk, getTestDifficulty())) {
+
+  while (!miner::find_nonce_for_given_block(blk, getTestDifficulty())) {
     blk.timestamp++;
   }
 
@@ -201,7 +201,7 @@ bool test_generator::constructBlockManually(Block& blk, const Block& prevBlock, 
   blk.timestamp    = actualParams & bf_timestamp ? timestamp : prevBlock.timestamp + m_currency.difficultyTarget(); // Keep difficulty unchanged
   blk.previousBlockHash       = actualParams & bf_prev_id   ? previousBlockHash    : get_block_hash(prevBlock);
   blk.transactionHashes     = actualParams & bf_tx_hashes ? transactionHashes  : std::vector<Crypto::Hash>();
-  
+
   blk.parentBlock.baseTransaction.version = 0;
   blk.parentBlock.baseTransaction.unlockTime = 0;
 
@@ -292,8 +292,8 @@ bool test_generator::constructMaxSizeBlock(CryptoNote::Block& blk, const CryptoN
 
 void fillNonce(CryptoNote::Block& blk, const difficulty_type& diffic) {
   blk.nonce = 0;
-  Crypto::cn_context context;
-  while (!miner::find_nonce_for_given_block(context, blk, diffic)) {
+
+  while (!miner::find_nonce_for_given_block(blk, diffic)) {
     blk.timestamp++;
   }
 }
