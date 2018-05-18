@@ -836,7 +836,7 @@ void WalletGreen::changePassword(const std::string& oldPassword, const std::stri
 
   
   Crypto::chacha8_key newKey;
-  generate_chacha8_key(password, m_key);
+  generate_chacha8_key(newPassword, m_key);
 
   m_containerStorage.atomicUpdate([this, newKey](ContainerStorage& newStorage) {
     copyContainerStoragePrefix(m_containerStorage, m_key, newStorage, newKey);

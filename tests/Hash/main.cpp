@@ -27,8 +27,6 @@
 using namespace std;
 typedef Crypto::Hash chash;
 
-Crypto::cn_context *context;
-
 extern "C" {
 #ifdef _MSC_VER
 #pragma warning(disable: 4297)
