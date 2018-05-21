@@ -834,7 +834,7 @@ void WalletGreen::changePassword(const std::string& oldPassword, const std::stri
     return;
   }
 
-  
+
   Crypto::chacha8_key newKey;
   generate_chacha8_key(newPassword, m_key);
 
@@ -940,8 +940,7 @@ std::string WalletGreen::createAddress(const Crypto::PublicKey& spendPublicKey) 
 
 std::string WalletGreen::doCreateAddress(const Crypto::PublicKey& spendPublicKey, const Crypto::SecretKey& spendSecretKey, uint64_t creationTimestamp) {
 
-  assert(creationTimestamp <= std::numeric_limits<uint64_t>::max() - m_currency.blockFutureTimeLimitV4());
-
+  assert(creationTimestamp <= std::numeric_limits<uint64_t>::max() - m_currency.blockFutureTimeLimitV5());
   throwIfNotInitialized();
   throwIfStopped();
 
@@ -952,7 +951,7 @@ std::string WalletGreen::doCreateAddress(const Crypto::PublicKey& spendPublicKey
     address = addWallet(spendPublicKey, spendSecretKey, creationTimestamp);
     auto currentTime = static_cast<uint64_t>(time(nullptr));
 
-    if (creationTimestamp + m_currency.blockFutureTimeLimitV4() < currentTime) {
+    if (creationTimestamp + m_currency.blockFutureTimeLimitV5() < currentTime) {
       save(WalletSaveLevel::SAVE_KEYS_AND_TRANSACTIONS, m_extra);
       shutdown();
       load(m_path, m_password);

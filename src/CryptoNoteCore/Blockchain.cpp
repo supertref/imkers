@@ -1747,7 +1747,7 @@ uint64_t Blockchain::get_adjusted_time() {
 bool Blockchain::check_block_timestamp_main(const Block& b) {
   uint64_t futureTimestampLimit;
   if (m_currency.isTestnet() || m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT_FUTURE_TIMESTAMP) {
-    futureTimestampLimit = m_currency.blockFutureTimeLimitV4();
+    futureTimestampLimit = b.majorVersion < BLOCK_MAJOR_VERSION_5 ? m_currency.blockFutureTimeLimitV4() : m_currency.blockFutureTimeLimitV5();
   } else {
     futureTimestampLimit = m_currency.blockFutureTimeLimit();
   }
@@ -2428,7 +2428,7 @@ bool Blockchain::getLowerBound(uint64_t timestamp, uint64_t startOffset, uint32_
   assert(startOffset < m_blocks.size());
   uint64_t futureTimestampLimit;
   if (m_currency.isTestnet() || m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT_FUTURE_TIMESTAMP) {
-    futureTimestampLimit = m_currency.blockFutureTimeLimitV4();
+    futureTimestampLimit = m_currency.blockFutureTimeLimitV5();
   } else {
     futureTimestampLimit = m_currency.blockFutureTimeLimit();
   }

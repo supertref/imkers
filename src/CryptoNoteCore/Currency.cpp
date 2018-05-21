@@ -500,13 +500,59 @@ namespace CryptoNote {
 	}
 
 	difficulty_type Currency::nextDifficulty(uint8_t blockMajorVersion, std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
-		if (blockMajorVersion >= BLOCK_MAJOR_VERSION_4) {
+		if (blockMajorVersion >= BLOCK_MAJOR_VERSION_5) {
+			return nextDifficultyV5(timestamps, cumulativeDifficulties);
+		} else if (blockMajorVersion == BLOCK_MAJOR_VERSION_4) {
 			return nextDifficultyV4(timestamps, cumulativeDifficulties);
 		} else if (blockMajorVersion == BLOCK_MAJOR_VERSION_3 || blockMajorVersion == BLOCK_MAJOR_VERSION_2) {
 				return nextDifficultyV2(timestamps, cumulativeDifficulties);
 		} else {
 				return nextDifficultyV1(timestamps, cumulativeDifficulties);
 		}
+	}
+
+	difficulty_type Currency::nextDifficultyV5(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
+		// Fuzzy EMA difficulty algorithm
+		// Copyright (c) 2018 Zawy
+		// EMA & LWMA math by Jacob Eliosoff and Tom Harding.
+		// https://github.com/zawy12/difficulty-algorithms/issues/27
+		// Cryptonote-like coins must see the link above for additional changes.
+		// After startup, timestamps & cumulativeDifficulties vectors should be size N+1.
+		double N = CryptoNote::parameters::DIFFICULTY_WINDOW_V4 - 1;
+		double T  = m_difficultyTarget;
+		double FTL = static_cast<int64_t>(CryptoNote::parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V5);
+		double L(0), next_D, ST, D, tSMA, sumD, sumST;
+
+		// For new coins height < N+1, give away first 4 blocks or use smaller N
+		if (timestamps.size() < 4 ) {   return 1;    }
+		else if ( timestamps.size() < N+1 ) { N = timestamps.size() - 1; }
+		// After startup, the following should be the norm.
+		else {  timestamps.resize(N+1); cumulativeDifficulties.resize(N+1); }
+
+		// Calculate fast EMA using most recent 2 blocks.
+		// +6xT prevents D dropping too far after attack to prevent on-off attack oscillations.
+		// -FTL prevents maliciously raising D.  ST=solvetime.
+		ST = std::min<int64_t>(-FTL, std::min<int64_t>( timestamps[N] - timestamps[N-1], 6*T));
+		//  Most recent solvetime applies to previous difficulty, not the most recent one.
+		D  = cumulativeDifficulties[N-1] - cumulativeDifficulties[N-2];
+		next_D = ROP( D*9/(8+ST/T/0.945) );
+
+		// Calculate a tempered SMA. Don't shift the difficulties back 1 as in EMA.
+		sumD = cumulativeDifficulties[N] - cumulativeDifficulties[0];
+		sumST = timestamps[N] - timestamps[0];
+		tSMA = ROP(sumD/(0.5*N+0.5*sumST/T));
+
+		// Do slow EMA if fast EMA is outside +/- 14% from tSMA.
+		if (next_D > (tSMA * 1.14) || next_D < (tSMA / 1.14)) {
+			next_D = ROP((D * 28) / (27 + ((ST / T) / 0.98)));
+		}
+		return static_cast<uint64_t>(0.9935*next_D);
+	}
+
+	// Round Off Protection. D should normally be > 1 and must be < 10 T.
+	double Currency::ROP(double RR) const {
+		if( ceil(RR + 0.01) > ceil(RR - 0.01) )   {  RR = ceil(RR + 0.03);  }
+		return RR;
 	}
 
 	difficulty_type Currency::nextDifficultyV4(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
@@ -653,7 +699,7 @@ namespace CryptoNote {
 
 	bool Currency::checkProofOfWorkV1(cn_pow_hash_v2& hash_ctx, const Block& block, difficulty_type currentDiffic,
 		Crypto::Hash& proofOfWork) const {
-		
+
 		if (BLOCK_MAJOR_VERSION_1 != block.majorVersion) {
 			return false;
 		}
@@ -667,7 +713,7 @@ namespace CryptoNote {
 
 	bool Currency::checkProofOfWorkV2(cn_pow_hash_v2& hash_ctx, const Block& block, difficulty_type currentDiffic,
 		Crypto::Hash& proofOfWork) const {
-			
+
 		if (block.majorVersion < BLOCK_MAJOR_VERSION_2) {
 			return false;
 		}
@@ -757,6 +803,7 @@ namespace CryptoNote {
 		timestampCheckWindowV5(parameters::BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V5);
 		blockFutureTimeLimit(parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT);
 		blockFutureTimeLimitV4(parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V4);
+		blockFutureTimeLimitV5(parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V5);
 
 		moneySupply(parameters::MONEY_SUPPLY);
 		emissionSpeedFactor(parameters::EMISSION_SPEED_FACTOR);
