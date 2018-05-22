@@ -519,7 +519,7 @@ namespace CryptoNote {
 	}
 
 	difficulty_type Currency::nextDifficultyV5(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
-		// Fuzzy EMA difficulty algorithm
+		// Slipstream EMA difficulty algorithm
 		// Copyright (c) 2018 Zawy
 		// EMA & LWMA math by Jacob Eliosoff and Tom Harding.
 		// https://github.com/zawy12/difficulty-algorithms/issues/27
@@ -545,16 +545,16 @@ namespace CryptoNote {
 		// -FTL prevents maliciously raising D.  ST=solvetime.
 		ST = std::max(-FTL, std::min(double(timestamps[N] - timestamps[N - 1]), 6 * T));
 		D  = cumulativeDifficulties[N] - cumulativeDifficulties[N - 1];
-		next_D = roundOffProtection((D * 9) / (8 + ((ST / T) / 0.945)));
+		next_D = roundOffProtection(D * 9 * T / (8 * T + ST * 1.058));
 
 		// Calculate a tempered SMA.
 		sumD = cumulativeDifficulties[N] - cumulativeDifficulties[0];
 		sumST = timestamps[N] - timestamps[0];
-		tSMA = roundOffProtection(sumD / ((0.5 * N) + ((0.5 * sumST) / T)));
+		tSMA = roundOffProtection(sumD * 2 * T / (N * T + sumST));
 
 		// Do slow EMA if fast EMA is outside +/- 14% from tSMA.
-		if (next_D > (tSMA * 1.14) || next_D < (tSMA / 1.14)) {
-			next_D = roundOffProtection((D * 28) / (27 + ((ST / T) / 0.98)));
+		if (next_D > (tSMA * 1.14) || next_D < (tSMA * 0.877)) {
+			next_D = roundOffProtection(D * 28 * T / (27 * T + ST * 1.02));
 		}
 		return static_cast<uint64_t>(0.9935 * next_D);
 	}
