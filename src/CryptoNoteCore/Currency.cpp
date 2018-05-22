@@ -512,7 +512,7 @@ namespace CryptoNote {
 	}
 
 	// Round Off Protection. D should normally be > 1 and must be < 10 T.
-	double roundOffProtection(double RR) const {
+	double roundOffProtection(double RR) {
 		if(ceil(100*(RR + 0.01)) > ceil(100*(RR - 0.01))) {
 			RR = ceil(100*(RR + 0.02)) / 100;
 		}
