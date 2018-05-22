@@ -137,7 +137,6 @@ public:
   bool checkProofOfWork(cn_pow_hash_v2& hash_ctx, const Block& block, difficulty_type currentDiffic, Crypto::Hash& proofOfWork) const;
 
   size_t getApproximateMaximumInputCount(size_t transactionSize, size_t outputCount, size_t mixinCount) const;
-  double ROP(double RR) const;
 
 private:
   Currency(Logging::ILogger& log) : logger(log, "currency") {

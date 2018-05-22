@@ -511,6 +511,14 @@ namespace CryptoNote {
 		}
 	}
 
+	// Round Off Protection. D should normally be > 1 and must be < 10 T.
+	double roundOffProtection(double RR) const {
+		if(ceil(100*(RR + 0.01)) > ceil(100*(RR - 0.01))) {
+			RR = ceil(100*(RR + 0.02)) / 100;
+		}
+		return RR;
+	}
+
 	difficulty_type Currency::nextDifficultyV5(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
 		// Fuzzy EMA difficulty algorithm
 		// Copyright (c) 2018 Zawy
@@ -535,24 +543,18 @@ namespace CryptoNote {
 		ST = std::min<int64_t>(-FTL, std::min<int64_t>( timestamps[N] - timestamps[N-1], 6*T));
 		//  Most recent solvetime applies to previous difficulty, not the most recent one.
 		D  = cumulativeDifficulties[N-1] - cumulativeDifficulties[N-2];
-		next_D = ROP( D*9/(8+ST/T/0.945) );
+		next_D = roundOffProtection( D*9/(8+ST/T/0.945) );
 
 		// Calculate a tempered SMA. Don't shift the difficulties back 1 as in EMA.
 		sumD = cumulativeDifficulties[N] - cumulativeDifficulties[0];
 		sumST = timestamps[N] - timestamps[0];
-		tSMA = ROP(sumD/(0.5*N+0.5*sumST/T));
+		tSMA = roundOffProtection(sumD/(0.5*N+0.5*sumST/T));
 
 		// Do slow EMA if fast EMA is outside +/- 14% from tSMA.
 		if (next_D > (tSMA * 1.14) || next_D < (tSMA / 1.14)) {
-			next_D = ROP((D * 28) / (27 + ((ST / T) / 0.98)));
+			next_D = roundOffProtection((D * 28) / (27 + ((ST / T) / 0.98)));
 		}
 		return static_cast<uint64_t>(0.9935*next_D);
-	}
-
-	// Round Off Protection. D should normally be > 1 and must be < 10 T.
-	double Currency::ROP(double RR) const {
-		if( ceil(RR + 0.01) > ceil(RR - 0.01) )   {  RR = ceil(RR + 0.03);  }
-		return RR;
 	}
 
 	difficulty_type Currency::nextDifficultyV4(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
