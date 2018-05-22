@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <boost/align/aligned_alloc.hpp>
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <malloc.h>
@@ -121,7 +122,7 @@ public:
 	inline uint8_t& as_byte(size_t i) { return *(reinterpret_cast<uint8_t*>(base_ptr)+i); }
 	inline uint8_t* as_byte() { return reinterpret_cast<uint8_t*>(base_ptr); }
 	inline uint64_t& as_uqword(size_t i) { return *(reinterpret_cast<uint64_t*>(base_ptr)+i); }
-	inline const uint64_t& as_uqword(size_t i) const { return *(reinterpret_cast<uint64_t*>(base_ptr)+i); } 
+	inline const uint64_t& as_uqword(size_t i) const { return *(reinterpret_cast<uint64_t*>(base_ptr)+i); }
 	inline uint64_t* as_uqword() { return reinterpret_cast<uint64_t*>(base_ptr); }
 	inline const uint64_t* as_uqword() const { return reinterpret_cast<uint64_t*>(base_ptr); }
 	inline int64_t& as_qword(size_t i) { return *(reinterpret_cast<int64_t*>(base_ptr)+i); }
@@ -145,13 +146,8 @@ class cn_slow_hash
 public:
 	cn_slow_hash() : borrowed_pad(false)
 	{
-#if !defined(HAS_WIN_INTRIN_API)
-		lpad.set(aligned_alloc(4096, MEMORY));
-		spad.set(aligned_alloc(4096, 4096));
-#else
-		lpad.set(_aligned_malloc(MEMORY, 4096));
-		spad.set(_aligned_malloc(4096, 4096));
-#endif
+		lpad.set(boost::alignment::aligned_alloc(4096, MEMORY));
+		spad.set(boost::alignment::aligned_alloc(4096, 4096));
 	}
 
 	cn_slow_hash (cn_slow_hash&& other) noexcept : lpad(other.lpad.as_byte()), spad(other.spad.as_byte()), borrowed_pad(other.borrowed_pad)
@@ -197,7 +193,7 @@ public:
 	}
 
 	void software_hash(const void* in, size_t len, void* out, bool prehashed);
-	
+
 #if !defined(HAS_INTEL_HW) && !defined(HAS_ARM_HW)
 	inline void hardware_hash(const void* in, size_t len, void* out, bool prehashed) { assert(false); }
 #else
