@@ -529,7 +529,7 @@ namespace CryptoNote {
 		double N = CryptoNote::parameters::DIFFICULTY_WINDOW_V4 - 1;
 		double T  = m_difficultyTarget;
 		double FTL = static_cast<int64_t>(CryptoNote::parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V5);
-		double L(0), next_D, ST, D, tSMA, sumD, sumST;
+		double next_D, ST, D, tSMA, sumD, sumST;
 
 		// For new coins height < N+1, give away first 4 blocks or use smaller N
 		if (timestamps.size() < 4 ) {   return 1;    }
