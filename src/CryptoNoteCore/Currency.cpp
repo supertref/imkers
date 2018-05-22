@@ -511,11 +511,9 @@ namespace CryptoNote {
 		}
 	}
 
-	// Round Off Protection. D should normally be > 1 and must be < 10 T.
+	// Round Off Protection. D must normally be > 100 and must be < 10 T.
 	double roundOffProtection(double RR) {
-		if(ceil(100*(RR + 0.01)) > ceil(100*(RR - 0.01))) {
-			RR = ceil(100*(RR + 0.02)) / 100;
-		}
+		if (ceil(RR + 0.01) > ceil(RR - 0.01)) RR = ceil(RR + 0.02);
 		return RR;
 	}
 
@@ -540,21 +538,21 @@ namespace CryptoNote {
 		// Calculate fast EMA using most recent 2 blocks.
 		// +6xT prevents D dropping too far after attack to prevent on-off attack oscillations.
 		// -FTL prevents maliciously raising D.  ST=solvetime.
-		ST = std::min<int64_t>(-FTL, std::min<int64_t>( timestamps[N] - timestamps[N-1], 6*T));
+		ST = std::min<int64_t>(-FTL, std::min<int64_t>( timestamps[N] - timestamps[N-1], 6 * T));
 		//  Most recent solvetime applies to previous difficulty, not the most recent one.
 		D  = cumulativeDifficulties[N-1] - cumulativeDifficulties[N-2];
-		next_D = roundOffProtection( D*9/(8+ST/T/0.945) );
+		next_D = roundOffProtection((D * 9) / (8 + ((ST / T) / 0.945)));
 
 		// Calculate a tempered SMA. Don't shift the difficulties back 1 as in EMA.
 		sumD = cumulativeDifficulties[N] - cumulativeDifficulties[0];
 		sumST = timestamps[N] - timestamps[0];
-		tSMA = roundOffProtection(sumD/(0.5*N+0.5*sumST/T));
+		tSMA = roundOffProtection(sumD / ((0.5 * N) + ((0.5 * sumST) / T)));
 
 		// Do slow EMA if fast EMA is outside +/- 14% from tSMA.
 		if (next_D > (tSMA * 1.14) || next_D < (tSMA / 1.14)) {
 			next_D = roundOffProtection((D * 28) / (27 + ((ST / T) / 0.98)));
 		}
-		return static_cast<uint64_t>(0.9935*next_D);
+		return static_cast<uint64_t>(0.9935 * next_D);
 	}
 
 	difficulty_type Currency::nextDifficultyV4(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
