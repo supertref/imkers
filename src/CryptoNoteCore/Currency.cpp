@@ -512,8 +512,9 @@ namespace CryptoNote {
 	}
 
 	// Round Off Protection. D must normally be > 100 and must be < 10 T.
+	// This is used because some devs believe double may pose a round-off risk.
 	double roundOffProtection(double RR) {
-		if (ceil(RR + 0.01) > ceil(RR - 0.01)) RR = ceil(RR + 0.02);
+		if(ceil(RR + 0.01) > ceil(RR)) RR = ceil(RR + 0.03);
 		return RR;
 	}
 
@@ -529,21 +530,24 @@ namespace CryptoNote {
 		double FTL = static_cast<int64_t>(CryptoNote::parameters::CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V5);
 		double next_D, ST, D, tSMA, sumD, sumST;
 
-		// For new coins height < N+1, give away first 4 blocks or use smaller N
-		if (timestamps.size() < 4 ) {   return 1;    }
-		else if ( timestamps.size() < N+1 ) { N = timestamps.size() - 1; }
-		// After startup, the following should be the norm.
-		else {  timestamps.resize(N+1); cumulativeDifficulties.resize(N+1); }
+		if (timestamps.size() >= (N + 1)) {
+			// After startup, the following should be the norm.
+			timestamps.resize(N + 1); cumulativeDifficulties.resize(N + 1);
+			// For new coins height < N+1, give away first 4 blocks or use smaller N
+		} else if (timestamps.size() >= 4) {
+			N = timestamps.size() - 1;
+		} else {
+			return 100;
+		}
 
 		// Calculate fast EMA using most recent 2 blocks.
 		// +6xT prevents D dropping too far after attack to prevent on-off attack oscillations.
 		// -FTL prevents maliciously raising D.  ST=solvetime.
-		ST = std::min<int64_t>(-FTL, std::min<int64_t>( timestamps[N] - timestamps[N-1], 6 * T));
-		//  Most recent solvetime applies to previous difficulty, not the most recent one.
-		D  = cumulativeDifficulties[N-1] - cumulativeDifficulties[N-2];
+		ST = std::max(-FTL, std::min(double(timestamps[N] - timestamps[N - 1]), 6 * T));
+		D  = cumulativeDifficulties[N] - cumulativeDifficulties[N - 1];
 		next_D = roundOffProtection((D * 9) / (8 + ((ST / T) / 0.945)));
 
-		// Calculate a tempered SMA. Don't shift the difficulties back 1 as in EMA.
+		// Calculate a tempered SMA.
 		sumD = cumulativeDifficulties[N] - cumulativeDifficulties[0];
 		sumST = timestamps[N] - timestamps[0];
 		tSMA = roundOffProtection(sumD / ((0.5 * N) + ((0.5 * sumST) / T)));
