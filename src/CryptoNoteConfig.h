@@ -81,9 +81,9 @@ const uint32_t UPGRADE_HEIGHT_V2                             = 1;
 const uint32_t UPGRADE_HEIGHT_V3                             = 30;
 const uint32_t UPGRADE_HEIGHT_V4                             = 73731;
 const uint32_t UPGRADE_HEIGHT_V5                             = -1;
-const unsigned UPGRADE_VOTING_THRESHOLD                      = 90;   // percent
-const uint32_t UPGRADE_VOTING_WINDOW                         = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY * 10000;  // blocks
-const uint32_t UPGRADE_WINDOW                                = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY * 2;  // blocks
+const unsigned UPGRADE_VOTING_THRESHOLD                      = 80;   // percent
+const uint32_t UPGRADE_VOTING_WINDOW                         = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
+const uint32_t UPGRADE_WINDOW                                = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY / 2;  // blocks
 static_assert(0 < UPGRADE_VOTING_THRESHOLD && UPGRADE_VOTING_THRESHOLD <= 100, "Bad UPGRADE_VOTING_THRESHOLD");
 static_assert(UPGRADE_VOTING_WINDOW > 1, "Bad UPGRADE_VOTING_WINDOW");
 
@@ -199,7 +199,8 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
 	{ 66568, "d3d2f05745ce8af6e71b190782e560362cbc62571ffce7fb7c4b5bd848e88ea1" },
 	{ 71714, "71af9b2599f0a44cdaa8be0dba5d78f4c23dbb3730d69ee217e6a8f0649f9592" },
 	{ 76072, "85313bc7fc25455f71ceab7660470b4bb6d22d6c72551f80a55308616d7ec19a" },
-	{ 81895, "759d10ef6fcdd6f0b91ca59369d5c4cb0543102d054c421210bd57a4cbdae5dd" }
+	{ 81895, "759d10ef6fcdd6f0b91ca59369d5c4cb0543102d054c421210bd57a4cbdae5dd" },
+	{ 90132, "6012c9bf6e8970f49de3736a4e952a465c61c67770d3c44e83509c9b2375ccc4" }
 };
 
 } // CryptoNote

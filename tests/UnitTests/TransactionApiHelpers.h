@@ -31,6 +31,8 @@ namespace {
 
   using namespace CryptoNote;
   using namespace Crypto;
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunused-function"
 
   inline AccountKeys accountKeysFromKeypairs(
     const KeyPair& viewKeys,
@@ -56,7 +58,6 @@ namespace {
     account.generate();
     return account;
   }
-
 
   AccountPublicAddress generateAddress() {
     return generateAccount().getAccountKeys().address;
@@ -114,6 +115,7 @@ namespace {
     fromBinaryArray(oldTx, tx.getTransactionData()); // ignore return code
     return oldTx;
   }
+  #pragma clang diagnostic pop
 }
 
 namespace CryptoNote {
