@@ -1,6 +1,8 @@
 Release notes Niobio Cash
 
 v.1.6.1
+- Change PoW to Cryptonight Heavy
+- Change Emission Speed Factor to 20
 - New API method for RPC Server: f_blocks_limited_json.
   {
     "params":
@@ -11,6 +13,7 @@ v.1.6.1
   }
   Returns <limit> blocks ending at height <height>.
   Use <height> equal zero to get the <limit> more recent blocks.
+  limit bigger than 30 only when binding RPC address to loopback.
   Example:
   curl -X POST -i -H "Accept: application/json" -d '{"params": {"height": 10000, "limit": 50}, "jsonrpc": "2.0", "id": "test", "method": "f_blocks_limited_json"}' http://127.0.0.1:8314/json_rpc
 
