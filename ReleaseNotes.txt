@@ -1,6 +1,6 @@
 Release notes Niobio Cash
 
-v.1.6.1
+v1.6.2
 - Change PoW to Cryptonight Heavy
 - Change Emission Speed Factor to 20
 - New API method for RPC Server: f_blocks_limited_json.
