@@ -55,9 +55,6 @@ bool Checkpoints::add_checkpoint(uint32_t height, const std::string &hash_str) {
 }
 //---------------------------------------------------------------------------
 bool Checkpoints::is_in_checkpoint_zone(uint32_t height) const {
-  if(m_points.empty()) {
-    logger(Logging::INFO, Logging::GREEN) << "m_points EMPTY";
-  }
   return !m_points.empty() && (height <= (--m_points.end())->first);
 }
 //---------------------------------------------------------------------------
