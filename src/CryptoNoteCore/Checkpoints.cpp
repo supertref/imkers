@@ -34,30 +34,6 @@
 
 using namespace Logging;
 
-namespace
-{
-  bool dns_records_match(const std::vector<std::string>& a, const std::vector<std::string>& b)
-  {
-    if (a.size() != b.size()) return false;
-
-    for (const auto& record_in_a : a)
-    {
-      bool ok = false;
-      for (const auto& record_in_b : b)
-      {
-	if (record_in_a == record_in_b)
-	{
-	  ok = true;
-	  break;
-	}
-      }
-      if (!ok) return false;
-    }
-
-    return true;
-  }
-} // anonymous namespace
-
 namespace CryptoNote {
 //---------------------------------------------------------------------------
 Checkpoints::Checkpoints(Logging::ILogger &log) : logger(log, "checkpoints") {}
