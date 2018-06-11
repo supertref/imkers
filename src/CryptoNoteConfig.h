@@ -110,8 +110,8 @@ const uint8_t  BLOCK_MINOR_VERSION_0                         =  0;
 const uint8_t  BLOCK_MINOR_VERSION_1                         =  1;
 
 const size_t   BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT        =  10000;  //by default, blocks ids count in synchronizing
-const size_t   BLOCKS_SYNCHRONIZING_DEFAULT_COUNT            =  300;    //by default, blocks count in blocks downloading
-const size_t   COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT         =  1000;
+const size_t   BLOCKS_SYNCHRONIZING_DEFAULT_COUNT            =  1000;    //by default, blocks count in blocks downloading
+const size_t   COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT         =  200;
 
 const int      P2P_DEFAULT_PORT                              =  8313;
 const int      RPC_DEFAULT_PORT                              =  8314;
@@ -146,6 +146,8 @@ struct CheckpointData {
 };
 
 const std::initializer_list<CheckpointData> CHECKPOINTS = {
+	{ 1,     "62b3674f55adf428b586c9c45ec0f0c57660c61ac28c3f3bc087f8fccf246230" },
+	{ 14000, "acd4ffd637dedf06237bdc4ed6175bdcac9e01f907846a7d6d910a15826c4916" },
 	{ 19111, "80a25bf8b24f6b286d81d3fb9f65a3dd55c9fe1d508b3d463fa1c0512e45af6f" },
 	{ 19112, "7a0a41f6ccbf72b47a21841b8e876f29877bb57aa15d7adda27c757e77fc7021" },
 	{ 24758, "ef7b7c3803df58e06b21dde88c252569f118cda2fafeae9b56c6061e7c4c18eb" },
@@ -200,7 +202,8 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
 	{ 71714, "71af9b2599f0a44cdaa8be0dba5d78f4c23dbb3730d69ee217e6a8f0649f9592" },
 	{ 76072, "85313bc7fc25455f71ceab7660470b4bb6d22d6c72551f80a55308616d7ec19a" },
 	{ 81895, "759d10ef6fcdd6f0b91ca59369d5c4cb0543102d054c421210bd57a4cbdae5dd" },
-	{ 90132, "6012c9bf6e8970f49de3736a4e952a465c61c67770d3c44e83509c9b2375ccc4" }
+	{ 90132, "6012c9bf6e8970f49de3736a4e952a465c61c67770d3c44e83509c9b2375ccc4" },
+	{ 94584, "cdc4a440b8a9e3bc4b1e665421d22d8c4895e3df92dcad248492a346aad63c28" }
 };
 
 } // CryptoNote
