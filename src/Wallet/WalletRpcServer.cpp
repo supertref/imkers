@@ -218,7 +218,13 @@ bool wallet_rpc_server::on_get_payments(const wallet_rpc::COMMAND_RPC_GET_PAYMEN
   if (sizeof(expectedPaymentId) != payment_id_blob.size()) {
     throw JsonRpc::JsonRpcError(WALLET_RPC_ERROR_CODE_WRONG_PAYMENT_ID, "Payment ID has invalid size");
   }
-
+  uint64_t bc_height;
+  try {
+    bc_height = m_node.getKnownBlockCount();
+  }
+  catch (std::exception &e) {
+    throw JsonRpc::JsonRpcError(WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR, std::string("Failed to get blockchain height: ") + e.what());
+  }
   expectedPaymentId = *reinterpret_cast<const Crypto::Hash*>(payment_id_blob.data());
   size_t transactionsCount = m_wallet.getTransactionCount();
   for (size_t trantransactionNumber = 0; trantransactionNumber < transactionsCount; ++trantransactionNumber) {
@@ -240,6 +246,7 @@ bool wallet_rpc_server::on_get_payments(const wallet_rpc::COMMAND_RPC_GET_PAYMEN
       rpc_payment.amount = txInfo.totalAmount;
       rpc_payment.block_height = txInfo.blockHeight;
       rpc_payment.unlock_time = txInfo.unlockTime;
+      rpc_payment.confirmations = (txInfo.blockHeight != UNCONFIRMED_TRANSACTION_GLOBAL_OUTPUT_INDEX ? bc_height - txInfo.blockHeight : 0);
       res.payments.push_back(rpc_payment);
     }
   }

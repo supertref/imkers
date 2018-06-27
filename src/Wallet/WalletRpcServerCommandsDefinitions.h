@@ -100,12 +100,14 @@ using CryptoNote::ISerializer;
     uint64_t amount;
     uint64_t block_height;
     uint64_t unlock_time;
+    uint64_t confirmations;
 
     void serialize(ISerializer& s) {
       KV_MEMBER(tx_hash)
       KV_MEMBER(amount)
       KV_MEMBER(block_height)
       KV_MEMBER(unlock_time)
+      KV_MEMBER(confirmations)
     }
   };
 
