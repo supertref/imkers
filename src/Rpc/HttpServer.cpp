@@ -76,7 +76,7 @@ HttpServer::HttpServer(System::Dispatcher& dispatcher, Logging::ILogger& log)
 void HttpServer::start(const std::string& address, uint16_t port, const std::string& user, const std::string& password) {
   m_listener = System::TcpListener(m_dispatcher, System::Ipv4Address(address), port);
   workingContextGroup.spawn(std::bind(&HttpServer::acceptLoop, this));
-  
+
   		if (!user.empty() || !password.empty()) {
 			m_credentials = base64Encode(user + ":" + password);
 		}
@@ -104,10 +104,16 @@ void HttpServer::acceptLoop() {
     }
 
     m_connections.insert(&connection);
-    BOOST_SCOPE_EXIT_ALL(this, &connection) { 
+    BOOST_SCOPE_EXIT_ALL(this, &connection) {
       m_connections.erase(&connection); };
 
-    auto addr = connection.getPeerAddressAndPort();
+    //auto addr = connection.getPeerAddressAndPort();
+		auto addr = std::pair<System::Ipv4Address, uint16_t>(static_cast<System::Ipv4Address>(0), 0);
+		try {
+			addr = connection.getPeerAddressAndPort();
+		} catch (std::runtime_error&) {
+			logger(WARNING) << "Could not get IP of connection";
+		}
 
     logger(DEBUGGING) << "Incoming connection from " << addr.first.toDottedDecimal() << ":" << addr.second;
 
