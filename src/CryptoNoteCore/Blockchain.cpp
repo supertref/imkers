@@ -1626,13 +1626,11 @@ bool Blockchain::checkTransactionInputs(const Transaction& tx, const Crypto::Has
           //"Key image already spent in blockchain: " << Common::podToHex(in_to_key.keyImage);
         return false;
       }
-
       if (!check_tx_input(in_to_key, tx_prefix_hash, tx.signatures[inputIndex], pmax_used_block_height)) {
         logger(TRACE) <<
           "Failed ring signature validation for transaction " << transactionHash;
         return false;
       }
-
       ++inputIndex;
     } else if (txin.type() == typeid(MultisignatureInput)) {
       if (!validateInput(::boost::get<MultisignatureInput>(txin), transactionHash, tx_prefix_hash, tx.signatures[inputIndex])) {
@@ -1729,12 +1727,10 @@ bool Blockchain::check_tx_input(const KeyInput& txin, const Crypto::Hash& tx_pre
 
   if (!(sig.size() == output_keys.size())) { logger(ERROR, BRIGHT_RED) << "internal error: tx signatures count=" << sig.size() << " mismatch with outputs keys count for inputs=" << output_keys.size(); return false; }
   if (m_is_in_checkpoint_zone) {
-    m_blocks.clear_cache();
     return true;
   }
 
   bool ret = Crypto::check_ring_signature(tx_prefix_hash, txin.keyImage, output_keys, sig.data());
-  m_blocks.clear_cache();
   return ret;
 }
 
@@ -1936,6 +1932,7 @@ bool Blockchain::pushBlock(const Block& blockData, block_verification_context& b
 bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction>& transactions, block_verification_context& bvc) {
 
   Crypto::Hash blockHash = get_block_hash(blockData);
+  uint64_t height = getCurrentBlockchainHeight();
 
   if (m_blockIndex.hasBlock(blockHash)) {
     logger(ERROR, BRIGHT_RED) << "Block " << blockHash << " already exists in blockchain.";
@@ -1950,23 +1947,25 @@ bool Blockchain::pushBlock(const Block& blockData, const std::vector<Transaction
     return false;
   }
 
-  if (!m_checkpoints.check_block(getCurrentBlockchainHeight(), blockHash)) {
+  if (!m_checkpoints.check_block(height, blockHash)) {
     logger(ERROR, BRIGHT_RED) << "CHECKPOINT VALIDATION FAILED";
     bvc.m_verifivation_failed = true;
     return false;
   }
 
-  if (m_checkpoints.is_in_checkpoint_zone(getCurrentBlockchainHeight())) {
-    return pushBlockInCheckpointZone(blockData, transactions, bvc);
+  if (m_checkpoints.is_in_checkpoint_zone(height)) {
+    m_is_in_checkpoint_zone = true;
+    //return pushBlockInCheckpointZone(blockData, transactions, bvc);
   } else {
-    return pushBlockFullCheck(blockData,transactions,bvc);
+    m_is_in_checkpoint_zone = false;
   }
+  return pushBlockFullCheck(blockData,transactions,bvc);
 }
 
 bool Blockchain::pushBlockInCheckpointZone(const Block& blockData, const std::vector<Transaction>& transactions, block_verification_context& bvc) {
   std::lock_guard<decltype(m_blockchain_lock)> lk(m_blockchain_lock);
 
-  auto blockProcessingStart = std::chrono::steady_clock::now();
+  //auto blockProcessingStart = std::chrono::steady_clock::now();
   Crypto::Hash blockHash = get_block_hash(blockData);
 
   BlockEntry block;
@@ -2028,10 +2027,10 @@ bool Blockchain::pushBlockInCheckpointZone(const Block& blockData, const std::ve
 
   pushBlock(block);
 
-  auto block_processing_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - blockProcessingStart).count();
+  //auto block_processing_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - blockProcessingStart).count();
 
   if (m_blocks.size() % 1000 == 0) {
-    logger(INFO) << "+++++ Blockchain loaded to height: " << block.height + 1;
+    logger(INFO) << "+++++ Blockchain loaded to height: " << block.height;
   }
   bvc.m_added_to_main_chain = true;
 
@@ -2040,7 +2039,6 @@ bool Blockchain::pushBlockInCheckpointZone(const Block& blockData, const std::ve
   m_upgradeDetectorV4.blockPushed();
   m_upgradeDetectorV5.blockPushed();
   update_next_comulative_size_limit();
-
   return true;
 }
 
@@ -2050,38 +2048,32 @@ bool Blockchain::pushBlockFullCheck(const Block& blockData, const std::vector<Tr
   auto blockProcessingStart = std::chrono::steady_clock::now();
 
   Crypto::Hash blockHash = get_block_hash(blockData);
-
   if (m_blockIndex.hasBlock(blockHash)) {
     logger(ERROR, BRIGHT_RED) <<
       "Block " << blockHash << " already exists in blockchain.";
     bvc.m_verifivation_failed = true;
     return false;
   }
-
   if (!checkBlockVersion(blockData, blockHash)) {
     bvc.m_verifivation_failed = true;
     return false;
   }
-
   if (!checkParentBlockSize(blockData, blockHash)) {
     bvc.m_verifivation_failed = true;
     return false;
   }
-
   if (blockData.previousBlockHash != getTailId()) {
     logger(INFO, BRIGHT_WHITE) <<
       "Block " << blockHash << " has wrong previousBlockHash: " << blockData.previousBlockHash << ", expected: " << getTailId();
     bvc.m_verifivation_failed = true;
     return false;
   }
-
   if (!check_block_timestamp_main(blockData)) {
     logger(INFO, BRIGHT_WHITE) <<
       "Block " << blockHash << " has invalid timestamp: " << blockData.timestamp;
     bvc.m_verifivation_failed = true;
     return false;
   }
-
   auto targetTimeStart = std::chrono::steady_clock::now();
   auto target_calculating_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - targetTimeStart).count();
 
@@ -2093,7 +2085,6 @@ bool Blockchain::pushBlockFullCheck(const Block& blockData, const std::vector<Tr
   else {
     currentDifficulty = 1000000;
   }
-
   if (!(currentDifficulty)) {
   	if (m_currency.isTestnet() || m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT) {
   		logger(ERROR, BRIGHT_RED) << "!!!!!!!!! difficulty overhead !!!!!!!!!";
@@ -2104,6 +2095,7 @@ bool Blockchain::pushBlockFullCheck(const Block& blockData, const std::vector<Tr
   auto longhashTimeStart = std::chrono::steady_clock::now();
   Crypto::Hash proof_of_work = NULL_HASH;
   if (m_checkpoints.is_in_checkpoint_zone(getCurrentBlockchainHeight())) {
+
     if (!m_checkpoints.check_block(getCurrentBlockchainHeight(), blockHash)) {
       logger(ERROR, BRIGHT_RED) <<
         "CHECKPOINT VALIDATION FAILED";
@@ -2129,7 +2121,6 @@ bool Blockchain::pushBlockFullCheck(const Block& blockData, const std::vector<Tr
     bvc.m_verifivation_failed = true;
     return false;
   }
-
   Crypto::Hash minerTransactionHash = getObjectHash(blockData.baseTransaction);
 
   BlockEntry block;
@@ -2167,12 +2158,10 @@ bool Blockchain::pushBlockFullCheck(const Block& blockData, const std::vector<Tr
     cumulative_block_size += blob_size;
     fee_summary += fee;
   }
-
   if (!checkCumulativeBlockSize(blockHash, cumulative_block_size, m_blocks.size())) {
     bvc.m_verifivation_failed = true;
     return false;
   }
-
   int64_t emissionChange = 0;
   uint64_t reward = 0;
   uint64_t already_generated_coins = m_blocks.empty() ? 0 : m_blocks.back().already_generated_coins;
@@ -2184,7 +2173,6 @@ bool Blockchain::pushBlockFullCheck(const Block& blockData, const std::vector<Tr
   		return false;
   	}
   }
-
   block.height = static_cast<uint32_t>(m_blocks.size());
   block.block_cumulative_size = cumulative_block_size;
   block.cumulative_difficulty = currentDifficulty;
@@ -2194,11 +2182,14 @@ bool Blockchain::pushBlockFullCheck(const Block& blockData, const std::vector<Tr
   }
 
   pushBlock(block);
-
   auto block_processing_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - blockProcessingStart).count();
 
-  logger(INFO) <<
-    "+++++ BLOCK SUCCESSFULLY ADDED at " << "Height: " << block.height << ", Hash: " << blockHash;
+  if (block.height % 100 == 0) {
+    logger(INFO) << "+++++ Blockchain loaded to height: " << block.height;
+  }
+
+  //logger(INFO) <<
+  //  "+++++ BLOCK SUCCESSFULLY ADDED at " << "Height: " << block.height << ", Hash: " << blockHash;
   logger(TRACE) <<
     "PoW: " << proof_of_work << ", difficulty: " << currentDifficulty
     << ENDL << "block reward: " << m_currency.formatAmount(reward) << ", fee: " << m_currency.formatAmount(fee_summary)
@@ -2212,7 +2203,6 @@ bool Blockchain::pushBlockFullCheck(const Block& blockData, const std::vector<Tr
   m_upgradeDetectorV4.blockPushed();
   m_upgradeDetectorV5.blockPushed();
   update_next_comulative_size_limit();
-
   return true;
 }
 

@@ -293,6 +293,7 @@ void Dispatcher::yield() {
     }
 
     updatesCounter = 0;
+    if(count > 16) count = 16;
     if (count > 0) {
       for (int i = 0; i < count; ++i) {
         if (events[i].flags & EV_ERROR) {
@@ -312,10 +313,12 @@ void Dispatcher::yield() {
           continue;
         }
 
-        static_cast<OperationContext*>(events[i].udata)->context->interruptProcedure = nullptr;
-        pushContext(static_cast<OperationContext*>(events[i].udata)->context);
-        if (events[i].filter == EVFILT_WRITE) {
-          EV_SET(&updates[updatesCounter++], events[i].ident, EVFILT_WRITE, EV_DELETE | EV_DISABLE, 0, 0, NULL);
+        if(static_cast<OperationContext*>(events[i].udata)->context != nullptr) {
+          static_cast<OperationContext*>(events[i].udata)->context->interruptProcedure = nullptr;
+          pushContext(static_cast<OperationContext*>(events[i].udata)->context);
+          if (events[i].filter == EVFILT_WRITE) {
+            EV_SET(&updates[updatesCounter++], events[i].ident, EVFILT_WRITE, EV_DELETE | EV_DISABLE, 0, 0, NULL);
+          }
         }
       }
     } else {
