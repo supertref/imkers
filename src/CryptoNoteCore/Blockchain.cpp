@@ -2094,22 +2094,14 @@ bool Blockchain::pushBlockFullCheck(const Block& blockData, const std::vector<Tr
 
   auto longhashTimeStart = std::chrono::steady_clock::now();
   Crypto::Hash proof_of_work = NULL_HASH;
-  if (m_checkpoints.is_in_checkpoint_zone(getCurrentBlockchainHeight())) {
-
-    if (!m_checkpoints.check_block(getCurrentBlockchainHeight(), blockHash)) {
-      logger(ERROR, BRIGHT_RED) <<
-        "CHECKPOINT VALIDATION FAILED";
-      bvc.m_verifivation_failed = true;
-      return false;
-    }
-  } else {
+  if (!m_is_in_checkpoint_zone) {
     if (!m_currency.checkProofOfWork(m_pow_ctx, blockData, currentDifficulty, proof_of_work)) {
-	  if (m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT) {
-		  logger(INFO, BRIGHT_WHITE) <<
-			  "Block " << blockHash << ", has too weak proof of work: " << proof_of_work << ", expected difficulty: " << currentDifficulty;
-		  bvc.m_verifivation_failed = true;
-		  return false;
-	  }
+      if (m_blocks.size() > BLOCK_HEIGHT_ALIGNMENT) {
+        logger(INFO, BRIGHT_WHITE) <<
+        "Block " << blockHash << ", has too weak proof of work: " << proof_of_work << ", expected difficulty: " << currentDifficulty;
+        bvc.m_verifivation_failed = true;
+        return false;
+      }
     }
   }
 
