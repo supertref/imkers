@@ -1,5 +1,13 @@
 Release notes Niobio Cash
 
+v1.6.3
+- DNS Checkpoints
+- Optimizes use of checkpoints
+- Fix multithreading hanging on wallets
+- Clean log messages
+- Now compiles on GNU C 7+
+- Bug fixes
+
 v1.6.2
 - Change PoW to Cryptonight Heavy
 - Change Emission Speed Factor to 20
