@@ -1889,8 +1889,6 @@ bool Blockchain::addNewBlock(const Block& bl_, block_verification_context& bvc) 
 
     //check that block refers to chain tail
     if (!(bl.previousBlockHash == getTailId())) {
-      logger(INFO) << "bl.previousBlockHash = " << bl.previousBlockHash;
-      logger(INFO) << "getTailId() = " << getTailId();
       //chain switching or wrong block
       bvc.m_added_to_main_chain = false;
       add_result = handle_alternative_block(bl, id, bvc);
