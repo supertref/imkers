@@ -51,11 +51,11 @@ cmake -G "Visual Studio 12 Win64" ..
 ```
 
 # Português
-Niobio cash é uma criptomoeda brasileira, assim como o Bitcoin, mas mais anônima e centrado na privacidade, com resistência maior a análises da blockchain. É o dinheiro eletrônico das pessoas, não está ligado a governos.
+Niobio cash é uma criptomoeda brasileira, assim como o Bitcoin, mas mais anônima e centrada na privacidade, com resistência maior a análises da blockchain. É o dinheiro eletrônico das pessoas, não está ligado a governos.
 
 ## Binários
 
-Você pode realizar o download dos Binários para Linux, MacOS, e Windows [AQ](https://github.com/niobio-cash/niobio-node-daemon/releases)
+Você pode realizar o download dos Binários para Linux, MacOS, e Windows [AQUI](https://github.com/niobio-cash/niobio-node-daemon/releases)
 
 ## Compilando Niobio
 
