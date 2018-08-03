@@ -460,6 +460,7 @@ void InProcessNode::updateLastLocalBlockHeaderInfo() {
     core.get_blockchain_top(height, hash);
   } while (!core.getBlockByHash(hash, block) || !core.getBlockDifficulty(height, difficulty));
   */
+
   try {
     core.get_blockchain_top(height, hash);
     core.getBlockByHash(hash, block);
@@ -467,7 +468,7 @@ void InProcessNode::updateLastLocalBlockHeaderInfo() {
   } catch (const std::exception&) {
     return;
   }
-
+  
   lastLocalBlockHeaderInfo.index = height;
   lastLocalBlockHeaderInfo.majorVersion = block.majorVersion;
   lastLocalBlockHeaderInfo.minorVersion = block.minorVersion;

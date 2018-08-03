@@ -293,7 +293,7 @@ void Dispatcher::yield() {
     }
 
     updatesCounter = 0;
-    if(count > 16) count = 16;
+    //if(count > 16) count = 16;
     if (count > 0) {
       for (int i = 0; i < count; ++i) {
         if (events[i].flags & EV_ERROR) {

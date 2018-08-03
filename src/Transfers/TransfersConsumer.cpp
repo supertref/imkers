@@ -210,9 +210,9 @@ bool TransfersConsumer::onNewBlocks(const CompleteBlock* blocks, uint32_t startH
   std::atomic<bool> stopProcessing(false);
 
   auto pushingThread = std::async(std::launch::async, [&] {
-    uint32_t i = 0;
-    for(uint32_t j = count - 1; j--; ) {
-    //for( uint32_t i = 0; i < count && !stopProcessing; ++i) {
+    //uint32_t i = 1;
+    //for(uint32_t j = count - 1; j--; ) {
+    for( uint32_t i = 0; i < count && !stopProcessing; ++i) {
       const auto& block = blocks[i].block;
 
       if (!block.is_initialized()) {
@@ -223,6 +223,8 @@ bool TransfersConsumer::onNewBlocks(const CompleteBlock* blocks, uint32_t startH
       if (m_syncStart.timestamp && block->timestamp < m_syncStart.timestamp) {
         continue;
       }
+
+      //if(stopProcessing) break;
 
       TransactionBlockInfo blockInfo;
       blockInfo.height = startHeight + i;
@@ -240,7 +242,7 @@ bool TransfersConsumer::onNewBlocks(const CompleteBlock* blocks, uint32_t startH
         inputQueue.push(item);
         ++blockInfo.transactionIndex;
       }
-      i++;
+      //i++;
     }
 
     inputQueue.close();
