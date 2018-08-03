@@ -2,6 +2,9 @@ Release notes Niobio Cash
 
 v1.6.4
 - Fix Windows compilation issues
+- Security fix for double counting tx
+- Fix http issue accepting connection
+
 v1.6.3
 - DNS Checkpoints
 - Optimizes use of checkpoints
