@@ -33,6 +33,7 @@ using namespace Crypto;
 namespace {
 
 using namespace CryptoNote;
+std::unordered_set<Crypto::PublicKey> m_allOutputKeys;
 
 void checkOutputKey(
   const KeyDerivation& derivation,
@@ -58,6 +59,7 @@ void findMyOutputs(
   std::unordered_map<PublicKey, std::vector<uint32_t>>& outputs) {
 
   auto txPublicKey = tx.getTransactionPublicKey();
+
   KeyDerivation derivation;
 
   if (!generate_key_derivation( txPublicKey, viewSecretKey, derivation)) {
@@ -66,7 +68,7 @@ void findMyOutputs(
 
   size_t keyIndex = 0;
   size_t outputCount = tx.getOutputCount();
- 
+
   std::unordered_set<Crypto::PublicKey> public_keys_seen;
 
   for (size_t idx = 0; idx < outputCount; ++idx) {
@@ -429,8 +431,12 @@ std::error_code createTransfers(
         info.keyImage);
 
       assert(out.key == reinterpret_cast<const PublicKey&>(in_ephemeral.publicKey));
-
-      info.amount = amount;
+      if (m_allOutputKeys.find(out.key) != m_allOutputKeys.end()) {
+        info.amount = 0;
+      } else {
+        m_allOutputKeys.insert(out.key);
+        info.amount = amount;
+      }
       info.outputKey = out.key;
 
     } else if (outType == TransactionTypes::OutputType::Multisignature) {
