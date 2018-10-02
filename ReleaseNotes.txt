@@ -1,5 +1,8 @@
 Release notes Niobio Cash
 
+v1.6.5
+- Burn vector attack protection
+
 v1.6.4
 - Fix Windows compilation issues
 - Security fix for double counting tx
