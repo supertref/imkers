@@ -222,7 +222,7 @@ bool TransfersContainer::addTransaction(const TransactionBlockInfo& block, const
       deleteTransactionTransfers(tx.getTransactionHash());
     }
 
-    //throw;
+    throw;
   }
 }
 
