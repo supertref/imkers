@@ -396,6 +396,7 @@ std::error_code createTransfers(
   std::vector<TransactionOutputInformationIn>& transfers) {
 
   auto txPubKey = tx.getTransactionPublicKey();
+  std::vector<PublicKey> temp_keys;
 
   for (auto idx : outputs) {
 
@@ -442,13 +443,10 @@ std::error_code createTransfers(
             return std::error_code();
           }
         }
-        std::vector<PublicKey> temp_keys;
         temp_keys.push_back(out.key);
-        public_keys_seen.insert(std::make_pair(tx.getTransactionHash(), temp_keys));
       }
       info.amount = amount;
       info.outputKey = out.key;
-
     } else if (outType == TransactionTypes::OutputType::Multisignature) {
       uint64_t amount;
       MultisignatureOutput out;
@@ -475,6 +473,7 @@ std::error_code createTransfers(
 
     transfers.push_back(info);
   }
+  public_keys_seen.insert(std::make_pair(tx.getTransactionHash(), temp_keys));
 
   return std::error_code();
 }
