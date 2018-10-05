@@ -469,8 +469,8 @@ std::error_code createTransfers(
 
   transactions_hash_seen.emplace(tx.getTransactionHash());
   for (std::vector<PublicKey>::iterator it = temp_keys.begin(); it != temp_keys.end(); it++) {
-￼     public_keys_seen.insert(*it);
-￼  }
+    public_keys_seen.insert(*it);
+  }
 
   return std::error_code();
 }
