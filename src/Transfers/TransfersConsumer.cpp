@@ -461,9 +461,7 @@ std::error_code createTransfers(
               return std::error_code();
             }
           }
-          std::vector<PublicKey> temp_keys;
           temp_keys.push_back(key);
-          public_keys_seen.insert(std::make_pair(tx.getTransactionHash(), temp_keys));
         }
       }
 
@@ -474,7 +472,8 @@ std::error_code createTransfers(
     transfers.push_back(info);
   }
   public_keys_seen.insert(std::make_pair(tx.getTransactionHash(), temp_keys));
-
+  temp_keys.clear();
+  temp_keys.shrink_to_fit();
   return std::error_code();
 }
 
