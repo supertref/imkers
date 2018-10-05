@@ -338,6 +338,22 @@ struct COMMAND_RPC_GET_FEE_ADDRESS {
   };
 };
 
+struct COMMAND_RPC_GET_FEE_INFO {
+  typedef EMPTY_STRUCT request;
+
+  struct response {
+    std::string fee_address;
+    double fee_percent;
+	  std::string status;
+
+    void serialize(ISerializer &s) {
+      KV_MEMBER(fee_address)
+      KV_MEMBER(fee_percent)
+	    KV_MEMBER(status)
+    }
+  };
+};
+
 struct COMMAND_RPC_GETBLOCKCOUNT {
   typedef std::vector<std::string> request;
 
