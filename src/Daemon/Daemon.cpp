@@ -64,7 +64,7 @@ namespace
   const command_line::arg_descriptor<bool>        arg_print_genesis_tx = { "print-genesis-tx", "Prints genesis' block tx hex to insert it to config and exits" };
   const command_line::arg_descriptor<std::string> arg_enable_cors = { "enable-cors", "Adds header 'Access-Control-Allow-Origin' to the daemon's RPC responses. Uses the value as domain. Use * for all", "" };
   const command_line::arg_descriptor<std::string> arg_set_fee_address = { "fee-address", "Sets fee address for light wallets to the daemon's RPC responses.", "" };
-  const command_line::arg_descriptor<float>       arg_set_fee_percent = { "fee", "Sets fee percentage for light wallets. Format float. Default is 0.25.", 0.25 };
+  const command_line::arg_descriptor<double_t>       arg_set_fee_percent = { "fee", "Sets fee percentage for light wallets. Format float. Default is 0.25.", 0.25 };
   const command_line::arg_descriptor<bool>        arg_testnet_on  = {"testnet", "Used to deploy test nets. Checkpoints and hardcoded seeds are ignored, "
     "network id is changed. Use it with --data-dir flag. The wallet must be launched with --testnet flag.", false};
 }

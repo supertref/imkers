@@ -19,7 +19,7 @@
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "RpcServer.h"
-
+#include <iostream>
 #include <future>
 #include <unordered_map>
 
@@ -211,7 +211,7 @@ bool RpcServer::setFeeAddress(const std::string fee_address) {
   return true;
 }
 
-bool RpcServer::setFeePercent(const double fee_percent) {
+bool RpcServer::setFeePercent(const double_t fee_percent) {
   m_fee_percent = fee_percent;
   return true;
 }
@@ -547,6 +547,7 @@ bool RpcServer::on_get_fee_info(const COMMAND_RPC_GET_FEE_INFO::request& req, CO
   	return false;
   }
   res.fee_address = m_fee_address;
+
   res.fee_percent = m_fee_percent;
   res.status = CORE_RPC_STATUS_OK;
   return true;

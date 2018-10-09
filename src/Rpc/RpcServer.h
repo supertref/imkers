@@ -42,7 +42,7 @@ public:
   bool restrictRPC(const bool is_resctricted);
   bool enableCors(const std::string domain);
   bool setFeeAddress(const std::string fee_address);
-  bool setFeePercent(const double fee_percent);
+  bool setFeePercent(const double_t fee_percent);
   bool setRpcBindToLoopback(const std::string ip);
   bool isTestnetOrRpcBindToLoopback();
 
@@ -111,7 +111,7 @@ private:
   bool m_restricted_rpc;
   std::string m_cors_domain;
   std::string m_fee_address;
-  double m_fee_percent;
+  double_t m_fee_percent;
   bool m_rpc_bind_to_loopback;
 };
 
