@@ -502,9 +502,9 @@ namespace CryptoNote {
 		return Common::fromString(strAmount, amount);
 	}
 
-	difficulty_type Currency::nextDifficulty(uint8_t blockMajorVersion, std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
+	difficulty_type Currency::nextDifficulty(uint8_t blockMajorVersion, std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties, uint32_t currentHeight) const {
 		if (blockMajorVersion >= BLOCK_MAJOR_VERSION_6) {
-			return nextDifficultyByLWMA4(timestamps, cumulativeDifficulties);
+			return nextDifficultyByLWMA4(timestamps, cumulativeDifficulties, upgradeHeight(BLOCK_MAJOR_VERSION_6), currentHeight);
 		} else if (blockMajorVersion == BLOCK_MAJOR_VERSION_5 || blockMajorVersion == BLOCK_MAJOR_VERSION_4) {
 			return nextDifficultyV4(timestamps, cumulativeDifficulties);
 		} else if (blockMajorVersion == BLOCK_MAJOR_VERSION_3 || blockMajorVersion == BLOCK_MAJOR_VERSION_2) {
@@ -514,65 +514,67 @@ namespace CryptoNote {
 		}
 	}
 
-	difficulty_type Currency::nextDifficultyByLWMA4(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulative_difficulties) const {
+	difficulty_type Currency::nextDifficultyByLWMA4(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulative_difficulties, uint32_t upgradeHeight, uint32_t currentHeight) const {
 		// LWMA-4 difficulty algorithm
 		// Copyright (c) 2017-2018 Zawy, MIT License
 		// https://github.com/zawy12/difficulty-algorithms/issues/3
 		int64_t  T = static_cast<int64_t>(m_difficultyTarget);
 		int64_t  N = static_cast<int64_t>(CryptoNote::parameters::DIFFICULTY_WINDOW_V4 - 1);
-		int64_t  L(0), next_D, prev_D, avg_D, this_timestamp, previous_timestamp;
-		int64_t  ST, prev_ST, sum_2_ST(0), sum_3_ST(0), sum_11_ST(0);
+    int64_t  L(0), ST(0), next_D, prev_D, avg_D;
 
-		assert(timestamps.size() == cumulative_difficulties.size() && timestamps.size() <= N+1 );
+     assert(timestamps.size() == cumulative_difficulties.size() && timestamps.size() <= N+1 );
 
-		// If it's a new coin, do startup code.
-		uint64_t difficulty_guess = 100;
-		if (timestamps.size() <= 12 ) {   return difficulty_guess;   }
-		if ( static_cast<int64_t>( timestamps.size() ) < N +1 ) { N = timestamps.size()-1;  }
+    // If it's a new coin, do startup code.
+    uint64_t difficulty_guess = 100;
+    if (timestamps.size() <= 12 ) {   return difficulty_guess;   }
+    if ( static_cast<int64_t>( timestamps.size() ) < N +1 ) { N = timestamps.size()-1;  }
 
-		// If hashrate/difficulty ratio after a fork is < 1/3 prior ratio, hardcode D for N+1 blocks after fork.
-		// difficulty_guess = 100; //  Dev may change.  Guess low.
-		// if ( height <= UPGRADE_HEIGHT + 1 + static_cast<uint64_t>(N) ) { return difficulty_guess;  }
+    // If hashrate/difficulty ratio after a fork is < 1/3 prior ratio, hardcode D for N+1 blocks after fork.
+    //difficulty_guess = 100; //  Dev may change.  Guess low.
+    if ( currentHeight <= upgradeHeight + static_cast<uint64_t>(N / 2) ) { return static_cast<int64_t>(cumulative_difficulties[0] / 2) ;  }
 
-		previous_timestamp = timestamps[0];
-		for ( int64_t i = 1; i <= N; i++) {
-			// Handle out of sequence timestamps carefully to prevent exploits.
-			if ( static_cast<int64_t>( timestamps[i] ) > previous_timestamp-3*T  ) {
-				this_timestamp = timestamps[i];
-			} else {  this_timestamp = previous_timestamp-3*T;   }
-			// Don't let a long ST drop it too much, unless it's a really long ST
-			ST = std::min(3*T ,this_timestamp - previous_timestamp) +
-			std::max(static_cast<int64_t>(0), this_timestamp - previous_timestamp - 15*T);
-			previous_timestamp = this_timestamp;
-			L +=  ST * i ; // to get LWMA of ST's
-			if ( i > N-11) { sum_11_ST += ST; }
-			if ( i > N-3 ) { sum_3_ST += ST; }
-			if ( i > N-2 ) { sum_2_ST += ST; }
-			if ( i == N ) { prev_ST = ST; }
-		}
-		next_D = (static_cast<int64_t>(cumulative_difficulties[N] - cumulative_difficulties[0])*T*(N+1)*98)/(100*2*L);
-		prev_D = static_cast<int64_t>( cumulative_difficulties[N] - cumulative_difficulties[N-1] );
-		next_D = std::max((prev_D*67)/100, std::min(next_D, (prev_D*150)/100) );
-		avg_D = static_cast<int64_t>( cumulative_difficulties[N] - cumulative_difficulties[0] ) / N;
+    // Recreate timestamps vector to safely handle out-of-sequence timestamps.
+    std::vector<int64_t>TS(N+1);
+    TS[0] = timestamps[0];
+    for ( int64_t i = 1; i <= N; i++) {
+       if ( static_cast<int64_t>( timestamps[i] ) > TS[i-1]-3*T  ) {
+           TS[i] = timestamps[i];
+       } else {  TS[i] = TS[i-1]-3*T;   }
+    }
+    for ( int64_t i = 1; i <= N; i++) {
+       // If there's a long ST preceded by 3 or 6 barely-fast STs, treat it as barely slow.
+       if ( i > 4 && TS[i]-TS[i-1] > 5*T  && TS[i-1] - TS[i-4] < 2*T ) {   ST = T; }
+       else if ( i > 7 && TS[i]-TS[i-1] > 5*T  && TS[i-1] - TS[i-7] < 4*T ) {   ST = T; }
+       else {
+          // Soften drops with a 5xT limit
+          ST = std::min(5*T ,TS[i] - TS[i-1]);
+       }
+       L +=  ST * i ;
+    }
+    next_D = (static_cast<int64_t>(cumulative_difficulties[N] -
+           cumulative_difficulties[0])*T*(N+1)*98)/(100*2*L);
+    prev_D = static_cast<int64_t>( cumulative_difficulties[N] - cumulative_difficulties[N-1] );
+    next_D = std::max((prev_D*67)/100, std::min(next_D, (prev_D*150)/100) );
+    avg_D = static_cast<int64_t>( cumulative_difficulties[N] - cumulative_difficulties[0] )/N;
 
-		// Jump 8% higher if 1) last 3 ST's are fast and 2) the jump is <= 20% above avg_D.
-		if (  sum_3_ST < (8*T)/10   )      {
-			next_D = std::max( next_D, std::min( (prev_D*108)/100, (120*avg_D)/100 ) );
-		}
-		if (  ( sum_2_ST < (6*T)/10 ) ||  ( prev_ST < (3*T)/10 ) )  {
-			next_D = std::max( next_D, std::min( (prev_D*108)/100, (112*avg_D)/100 ) );
-		}
-		// Optional. Convert next_D to a scientific notation.
-		int64_t j = 1000000000;
-		for (int64_t i = 9; i > 2; i--) {
-			if ( next_D > j*100 ) { next_D = (next_D/j)*j + i*j/100; break; }
-			else { j /= 10; }
-		}
-		// Optional. Make least 2 digits of difficulty show estimated HR of past 11 blocks
-		// as multiple of expected HR.  25 => HR is 2.5x difficulty's expected HR for past 11 blocks.
-		if ( next_D > 10000 ) {next_D = (next_D*100)/100 + (T*110)/sum_11_ST;}
+    // Jump 8% higher if 1) last 3 ST's are fast and 2) the jump is <= 20% above avg_D.
+    if (  TS[N] - TS[N-3] < (9*T)/10   )      {
+        next_D = std::max( next_D, std::min( (prev_D*108)/100, (120*avg_D)/100 ) );
+     }
+    if (  ( TS[N] - TS[N-2]  < (6*T)/10 ) ||  ( TS[N] - TS[N-1]  < (3*T)/10 ) )  {
+        next_D = std::max( next_D, std::min( (prev_D*108)/100, (112*avg_D)/100 ) );
+    }
+   // Optional. Convert next_D to a scientific notation.
+    int64_t j = 1000000000;
+    for (int64_t i = 9; i > 2; i--) {
+       if ( next_D > j*100 ) { next_D = (next_D/j)*j + i*j/100; break; }
+       else { j /= 10; }
+    }
+    // Optional. Make least 2 digits of difficulty show estimated HR of past 11 blocks
+    // as multiple of expected HR.  25 => HR is 2.5x difficulty's expected HR for past 11 blocks.
+    if ( next_D > 10000 ) {  next_D = (next_D/100)*100 + (T*110)/(TS[N] - TS[N-11] );    }
 
-		return static_cast<int64_t>(next_D);
+    return static_cast<int64_t>(next_D);
 	}
 
 	difficulty_type Currency::nextDifficultyByLWMA3(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
@@ -892,6 +894,7 @@ namespace CryptoNote {
 		upgradeHeightV3(parameters::UPGRADE_HEIGHT_V3);
 		upgradeHeightV4(parameters::UPGRADE_HEIGHT_V4);
 		upgradeHeightV5(parameters::UPGRADE_HEIGHT_V5);
+		upgradeHeightV6(parameters::UPGRADE_HEIGHT_V6);
 		upgradeVotingThreshold(parameters::UPGRADE_VOTING_THRESHOLD);
 		upgradeVotingWindow(parameters::UPGRADE_VOTING_WINDOW);
 		upgradeWindow(parameters::UPGRADE_WINDOW);

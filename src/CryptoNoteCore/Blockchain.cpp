@@ -729,7 +729,7 @@ difficulty_type Blockchain::getDifficultyForNextBlock() {
     timestamps.push_back(m_blocks[offset].bl.timestamp);
     commulative_difficulties.push_back(m_blocks[offset].cumulative_difficulty);
   }
-  return m_currency.nextDifficulty(BlockMajorVersion, timestamps, commulative_difficulties);
+  return m_currency.nextDifficulty(BlockMajorVersion, timestamps, commulative_difficulties, m_blocks.size() - 1);
 }
 
 uint64_t Blockchain::getBlockTimestamp(uint32_t height) {
@@ -986,7 +986,9 @@ difficulty_type Blockchain::get_next_difficulty_for_alternative_chain(const std:
 
   }
 
-  return m_currency.nextDifficulty(BlockMajorVersion, timestamps, commulative_difficulties);
+  size_t currentHeight = alt_chain.size() ? alt_chain.front()->second.height : bei.height;
+
+  return m_currency.nextDifficulty(BlockMajorVersion, timestamps, commulative_difficulties, currentHeight);
 }
 
 bool Blockchain::prevalidate_miner_transaction(const Block& b, uint32_t height) {
