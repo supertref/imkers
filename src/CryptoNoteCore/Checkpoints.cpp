@@ -17,6 +17,7 @@
 // along with Bytecoin.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Checkpoints.h"
+#include "../CryptoNoteConfig.h"
 #include "Common/StringTools.h"
 #include "Common/DnsTools.h"
 #include <cstdlib>
@@ -85,7 +86,6 @@ namespace CryptoNote {
       logger(Logging::ERROR, Logging::BRIGHT_WHITE) << "An attempt of too deep reorganization: " << blockchain_height - block_height << ", BLOCK REJECTED";
       return false;
     }
-      ￼
     auto it = m_points.upper_bound(blockchain_height);
     // Is blockchain_height before the first checkpoint?
     if (it == m_points.begin())
