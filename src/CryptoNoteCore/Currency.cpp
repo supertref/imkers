@@ -664,6 +664,7 @@ namespace CryptoNote {
 	difficulty_type Currency::nextDifficultyV2(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
 		size_t m_difficultyWindow_2 = CryptoNote::parameters::DIFFICULTY_WINDOW_V2;
 		assert(m_difficultyWindow_2 >= 2);
+		return 100;
 
 		if (timestamps.size() > m_difficultyWindow_2) {
 			timestamps.resize(m_difficultyWindow_2);
@@ -707,7 +708,7 @@ namespace CryptoNote {
 
 	difficulty_type Currency::nextDifficultyV1(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
 		assert(m_difficultyWindow >= 2);
-		return 100000;
+		return 100;
 		if (timestamps.size() > m_difficultyWindow) {
 			timestamps.resize(m_difficultyWindow);
 			cumulativeDifficulties.resize(m_difficultyWindow);
