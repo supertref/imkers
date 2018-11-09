@@ -161,7 +161,9 @@ namespace CryptoNote {
 		assert(m_emissionSpeedFactorV5 > 0 && m_emissionSpeedFactorV5 <= 8 * sizeof(uint64_t));
 
 		uint64_t baseReward = 0;
-		if (blockMajorVersion >= BLOCK_MAJOR_VERSION_5) {
+		if(blockMajorVersion >= BLOCK_MAJOR_VERSION_6) {
+			baseReward = ((m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5) * 0.9;
+		} else if (blockMajorVersion == BLOCK_MAJOR_VERSION_5) {
 			baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5;
 		} else {
 			baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactor;
