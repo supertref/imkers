@@ -518,6 +518,8 @@ namespace CryptoNote {
 		// LWMA-4 difficulty algorithm
 		// Copyright (c) 2017-2018 Zawy, MIT License
 		// https://github.com/zawy12/difficulty-algorithms/issues/3
+		logger(INFO) << "Using LWMA4";
+
 		int64_t  T = static_cast<int64_t>(m_difficultyTarget);
 		int64_t  N = static_cast<int64_t>(CryptoNote::parameters::DIFFICULTY_WINDOW_V4 - 1);
     int64_t  L(0), ST(0), next_D, prev_D, avg_D;
