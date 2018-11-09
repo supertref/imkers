@@ -1121,6 +1121,11 @@ bool Blockchain::handle_alternative_block(const Block& b, const Crypto::Hash& id
     return false;
   }
 
+  // refresh checkpoints list from DNS
+  #ifndef __ANDROID__
+    m_checkpoints.load_checkpoints_from_dns();
+  #endif
+
   if (!m_checkpoints.is_alternative_block_allowed(getCurrentBlockchainHeight(), block_height)) {
     logger(TRACE) << "Block with id: " << id << std::endl <<
       " can't be accepted for alternative chain, block height: " << block_height << std::endl <<
