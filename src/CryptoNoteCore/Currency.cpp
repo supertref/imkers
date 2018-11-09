@@ -581,7 +581,6 @@ namespace CryptoNote {
 		// LWMA-3 difficulty algorithm
 		// Copyright (c) 2017-2018 Zawy, MIT License
 		// https://github.com/zawy12/difficulty-algorithms/issues/3
-		return 500;
 		const uint64_t T = m_difficultyTarget;
 		size_t N = CryptoNote::parameters::DIFFICULTY_WINDOW_V4 - 1;
 		uint64_t  L(0), ST, sum_3_ST(0), next_D, prev_D, this_timestamp, previous_timestamp;
@@ -609,6 +608,7 @@ namespace CryptoNote {
 	}
 
 	difficulty_type Currency::nextDifficultyV4(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
+		return 500;
 		/*
 		LWMA difficulty algorithm
 		Copyright (c) 2017-2018 Zawy
