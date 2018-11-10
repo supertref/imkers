@@ -22,6 +22,7 @@
 #include <cctype>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
+#include <bitset>
 #include "../Common/Base58.h"
 #include "../Common/int-util.h"
 #include "../Common/StringTools.h"
@@ -162,7 +163,11 @@ namespace CryptoNote {
 
 		uint64_t baseReward = 0;
 		if(blockMajorVersion >= BLOCK_MAJOR_VERSION_6) {
-			baseReward = ((m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5) * 0.9;
+			baseReward = ((m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5) & ~m_emissionReductorV6;
+			logger(INFO) << std::bitset<64>((m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5) << " " << std::bitset<64>(~m_emissionReductorV6) << " " << std::bitset<64>(baseReward);
+			if (baseReward == 0) {
+				baseReward = ((m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5);
+			}
 		} else if (blockMajorVersion == BLOCK_MAJOR_VERSION_5) {
 			baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5;
 		} else {
@@ -865,6 +870,7 @@ namespace CryptoNote {
 		moneySupply(parameters::MONEY_SUPPLY);
 		emissionSpeedFactor(parameters::EMISSION_SPEED_FACTOR);
 		emissionSpeedFactorV5(parameters::EMISSION_SPEED_FACTOR_V5);
+		emissionReductorV6(parameters::EMISSION_REDUCTOR_V6);
 		cryptonoteCoinVersion(parameters::CRYPTONOTE_COIN_VERSION);
 
 		rewardBlocksWindow(parameters::CRYPTONOTE_REWARD_BLOCKS_WINDOW);
@@ -937,6 +943,15 @@ namespace CryptoNote {
 		}
 
 		m_currency.m_emissionSpeedFactorV5 = val;
+		return *this;
+	}
+
+	CurrencyBuilder& CurrencyBuilder::emissionReductorV6(unsigned int val) {
+		if (val <= 0 || val > 8 * sizeof(uint64_t)) {
+			throw std::invalid_argument("val at emissionReductorV6()");
+		}
+
+		m_currency.m_emissionReductorV6 = val;
 		return *this;
 	}
 

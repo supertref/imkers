@@ -50,6 +50,7 @@ public:
   uint64_t moneySupply() const { return m_moneySupply; }
   unsigned int emissionSpeedFactor() const { return m_emissionSpeedFactor; }
   unsigned int emissionSpeedFactorV5() const { return m_emissionSpeedFactorV5; }
+  unsigned int emissionReductorV6() const { return m_emissionReductorV6; }
   size_t cryptonoteCoinVersion() const { return m_cryptonoteCoinVersion; }
 
   size_t rewardBlocksWindow() const { return m_rewardBlocksWindow; }
@@ -161,6 +162,7 @@ private:
   uint64_t m_moneySupply;
   unsigned int m_emissionSpeedFactor;
   unsigned int m_emissionSpeedFactorV5;
+  unsigned int m_emissionReductorV6;
   size_t m_cryptonoteCoinVersion;
 
   size_t m_rewardBlocksWindow;
@@ -247,6 +249,7 @@ public:
   CurrencyBuilder& moneySupply(uint64_t val) { m_currency.m_moneySupply = val; return *this; }
   CurrencyBuilder& emissionSpeedFactor(unsigned int val);
   CurrencyBuilder& emissionSpeedFactorV5(unsigned int val);
+  CurrencyBuilder& emissionReductorV6(unsigned int val);
   CurrencyBuilder& cryptonoteCoinVersion(size_t val) { m_currency.m_cryptonoteCoinVersion = val; return *this; }
 
   CurrencyBuilder& rewardBlocksWindow(size_t val) { m_currency.m_rewardBlocksWindow = val; return *this; }
