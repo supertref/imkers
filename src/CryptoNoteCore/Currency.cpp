@@ -947,8 +947,8 @@ namespace CryptoNote {
 	}
 
 	CurrencyBuilder& CurrencyBuilder::emissionReductorV6(uint64_t val) {
-		if (val <= 0 || val > 8 * sizeof(uint64_t)) {
-			throw std::invalid_argument("val at emissionReductorV6()");
+		if (val <= 0) {
+			throw std::invalid_argument("val at emissionReductorV6() is zero or less");
 		}
 
 		m_currency.m_emissionReductorV6 = val;
