@@ -946,7 +946,7 @@ namespace CryptoNote {
 		return *this;
 	}
 
-	CurrencyBuilder& CurrencyBuilder::emissionReductorV6(unsigned int val) {
+	CurrencyBuilder& CurrencyBuilder::emissionReductorV6(uint64_t val) {
 		if (val <= 0 || val > 8 * sizeof(uint64_t)) {
 			throw std::invalid_argument("val at emissionReductorV6()");
 		}
