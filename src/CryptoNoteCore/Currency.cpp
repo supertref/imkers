@@ -512,9 +512,9 @@ namespace CryptoNote {
 		return Common::fromString(strAmount, amount);
 	}
 
-	difficulty_type Currency::nextDifficulty(uint8_t blockMajorVersion, std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties, uint32_t currentHeight) const {
+	difficulty_type Currency::nextDifficulty(uint8_t blockMajorVersion, std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
 		if (blockMajorVersion >= BLOCK_MAJOR_VERSION_6) {
-			return nextDifficultyByLWMA4(timestamps, cumulativeDifficulties, upgradeHeight(BLOCK_MAJOR_VERSION_6), currentHeight);
+			return nextDifficultyByLWMA4(timestamps, cumulativeDifficulties);
 		} else if (blockMajorVersion == BLOCK_MAJOR_VERSION_5 || blockMajorVersion == BLOCK_MAJOR_VERSION_4) {
 			return nextDifficultyV4(timestamps, cumulativeDifficulties);
 		} else if (blockMajorVersion == BLOCK_MAJOR_VERSION_3 || blockMajorVersion == BLOCK_MAJOR_VERSION_2) {
@@ -524,11 +524,10 @@ namespace CryptoNote {
 		}
 	}
 
-	difficulty_type Currency::nextDifficultyByLWMA4(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulative_difficulties, uint32_t upgradeHeight, uint32_t currentHeight) const {
+	difficulty_type Currency::nextDifficultyByLWMA4(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulative_difficulties) const {
 		// LWMA-4 difficulty algorithm
 		// Copyright (c) 2017-2018 Zawy, MIT License
 		// https://github.com/zawy12/difficulty-algorithms/issues/3
-		logger(INFO) << "Using LWMA4";
 
 		int64_t  T = static_cast<int64_t>(m_difficultyTarget);
 		int64_t  N = static_cast<int64_t>(CryptoNote::parameters::DIFFICULTY_WINDOW_V4 - 1);
@@ -540,10 +539,6 @@ namespace CryptoNote {
     uint64_t difficulty_guess = 100;
     if (timestamps.size() <= 12 ) {   return difficulty_guess;   }
     if ( static_cast<int64_t>( timestamps.size() ) < N +1 ) { N = timestamps.size()-1;  }
-
-    // If hashrate/difficulty ratio after a fork is < 1/3 prior ratio, hardcode D for N+1 blocks after fork.
-    //difficulty_guess = 100; //  Dev may change.  Guess low.
-    if ( currentHeight <= upgradeHeight + static_cast<uint64_t>(N / 2) ) { return static_cast<int64_t>(cumulative_difficulties[0] / 2) ;  }
 
     // Recreate timestamps vector to safely handle out-of-sequence timestamps.
     std::vector<int64_t>TS(N+1);
