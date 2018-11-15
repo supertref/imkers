@@ -162,13 +162,16 @@ namespace CryptoNote {
 		assert(m_emissionSpeedFactorV5 > 0 && m_emissionSpeedFactorV5 <= 8 * sizeof(uint64_t));
 
 		uint64_t baseReward = 0;
+		/*
 		if(blockMajorVersion >= BLOCK_MAJOR_VERSION_6) {
 			baseReward = ((m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5) & ~m_emissionReductorV6;
 			logger(INFO) << std::bitset<64>((m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5) << " " << std::bitset<64>(~m_emissionReductorV6) << " " << std::bitset<64>(baseReward);
 			if (baseReward == 0) {
 				baseReward = ((m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5);
 			}
-		} else if (blockMajorVersion == BLOCK_MAJOR_VERSION_5) {
+		} else
+		*/
+		if (blockMajorVersion >= BLOCK_MAJOR_VERSION_5) {
 			baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactorV5;
 		} else {
 			baseReward = (m_moneySupply - alreadyGeneratedCoins) >> m_emissionSpeedFactor;
