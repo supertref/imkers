@@ -42,6 +42,7 @@ const uint64_t TAIL_EMISSION_REWARD                          = 0; //UINT64_C(100
 const size_t CRYPTONOTE_COIN_VERSION                         = 1;
 const unsigned EMISSION_SPEED_FACTOR                         = 18;
 const unsigned EMISSION_SPEED_FACTOR_V5                      = 20;
+const uint64_t EMISSION_REDUCTOR_V6                          = UINT64_C(2147483648);
 static_assert(EMISSION_SPEED_FACTOR <= 8 * sizeof(uint64_t), "Bad EMISSION_SPEED_FACTOR");
 static_assert(EMISSION_SPEED_FACTOR_V5 <= 8 * sizeof(uint64_t), "Bad EMISSION_SPEED_FACTOR");
 const size_t   CRYPTONOTE_REWARD_BLOCKS_WINDOW               = 100;
@@ -81,6 +82,8 @@ const uint32_t UPGRADE_HEIGHT_V2                             = 1;
 const uint32_t UPGRADE_HEIGHT_V3                             = 30;
 const uint32_t UPGRADE_HEIGHT_V4                             = 73731;
 const uint32_t UPGRADE_HEIGHT_V5                             = 92999;
+const uint32_t UPGRADE_HEIGHT_V6                             = 153559;
+
 const unsigned UPGRADE_VOTING_THRESHOLD                      = 90;   // percent
 const uint32_t UPGRADE_VOTING_WINDOW                         = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
 const uint32_t UPGRADE_WINDOW                                = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
@@ -106,6 +109,7 @@ const uint8_t  BLOCK_MAJOR_VERSION_2                         =  2;
 const uint8_t  BLOCK_MAJOR_VERSION_3                         =  3;
 const uint8_t  BLOCK_MAJOR_VERSION_4                         =  4;
 const uint8_t  BLOCK_MAJOR_VERSION_5                         =  5;
+const uint8_t  BLOCK_MAJOR_VERSION_6                         =  6;
 const uint8_t  BLOCK_MINOR_VERSION_0                         =  0;
 const uint8_t  BLOCK_MINOR_VERSION_1                         =  1;
 
