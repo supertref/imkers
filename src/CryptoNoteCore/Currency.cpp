@@ -532,11 +532,11 @@ namespace CryptoNote {
 		uint64_t  T = static_cast<int64_t>(m_difficultyTarget);
 		uint64_t  N = static_cast<int64_t>(CryptoNote::parameters::DIFFICULTY_WINDOW_V4 - 1);
 		uint64_t  L(0), next_D, i, this_timestamp(0), previous_timestamp(0), avg_D;
-		
+
 		assert(timestamps.size() == cumulative_difficulties.size() && timestamps.size() <= N+1 );
 
 		// If it's a new coin, do startup code. Do not remove in case other coins copy your code.
-		uint64_t difficulty_guess = 100;
+		uint64_t difficulty_guess = 100000;
 		if (timestamps.size() <= 12 ) {   return difficulty_guess;   }
 		if ( timestamps.size()  < N +1 ) { N = timestamps.size()-1;  }
 
@@ -577,101 +577,15 @@ namespace CryptoNote {
 			est_HR = std::min(static_cast<uint64_t>(99), est_HR);
 			next_D = ((next_D+50)/100)*100 + est_HR;
 		}
+		if (next_D < 100000) {
+			next_D = 100000;
+		}
+
 		return  next_D;
 	}
 
-	difficulty_type Currency::nextDifficultyByLWMA4(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulative_difficulties) const {
-		// LWMA-4 difficulty algorithm
-		// Copyright (c) 2017-2018 Zawy, MIT License
-		// https://github.com/zawy12/difficulty-algorithms/issues/3
-
-		int64_t  T = static_cast<int64_t>(m_difficultyTarget);
-		int64_t  N = static_cast<int64_t>(CryptoNote::parameters::DIFFICULTY_WINDOW_V4 - 1);
-    int64_t  L(0), ST(0), next_D, prev_D, avg_D;
-
-     assert(timestamps.size() == cumulative_difficulties.size() && timestamps.size() <= N+1 );
-
-    // If it's a new coin, do startup code.
-    uint64_t difficulty_guess = 100;
-    if (timestamps.size() <= 12 ) {   return difficulty_guess;   }
-    if ( static_cast<int64_t>( timestamps.size() ) < N +1 ) { N = timestamps.size()-1;  }
-
-    // Recreate timestamps vector to safely handle out-of-sequence timestamps.
-    std::vector<int64_t>TS(N+1);
-    TS[0] = timestamps[0];
-    for ( int64_t i = 1; i <= N; i++) {
-       if ( static_cast<int64_t>( timestamps[i] ) > TS[i-1]-3*T  ) {
-           TS[i] = timestamps[i];
-       } else {  TS[i] = TS[i-1]-3*T;   }
-    }
-    for ( int64_t i = 1; i <= N; i++) {
-       // If there's a long ST preceded by 3 or 6 barely-fast STs, treat it as barely slow.
-       if ( i > 4 && TS[i]-TS[i-1] > 5*T  && TS[i-1] - TS[i-4] < 2*T ) {   ST = T; }
-       else if ( i > 7 && TS[i]-TS[i-1] > 5*T  && TS[i-1] - TS[i-7] < 4*T ) {   ST = T; }
-       else {
-          // Soften drops with a 5xT limit
-          ST = std::min(5*T ,TS[i] - TS[i-1]);
-       }
-       L +=  ST * i ;
-    }
-    next_D = (static_cast<int64_t>(cumulative_difficulties[N] -
-           cumulative_difficulties[0])*T*(N+1)*98)/(100*2*L);
-    prev_D = static_cast<int64_t>( cumulative_difficulties[N] - cumulative_difficulties[N-1] );
-    next_D = std::max((prev_D*67)/100, std::min(next_D, (prev_D*150)/100) );
-    avg_D = static_cast<int64_t>( cumulative_difficulties[N] - cumulative_difficulties[0] )/N;
-
-    // Jump 8% higher if 1) last 3 ST's are fast and 2) the jump is <= 20% above avg_D.
-    if (  TS[N] - TS[N-3] < (9*T)/10   )      {
-        next_D = std::max( next_D, std::min( (prev_D*108)/100, (120*avg_D)/100 ) );
-     }
-    if (  ( TS[N] - TS[N-2]  < (6*T)/10 ) ||  ( TS[N] - TS[N-1]  < (3*T)/10 ) )  {
-        next_D = std::max( next_D, std::min( (prev_D*108)/100, (112*avg_D)/100 ) );
-    }
-   // Optional. Convert next_D to a scientific notation.
-    int64_t j = 1000000000;
-    for (int64_t i = 9; i > 2; i--) {
-       if ( next_D > j*100 ) { next_D = (next_D/j)*j + i*j/100; break; }
-       else { j /= 10; }
-    }
-    // Optional. Make least 2 digits of difficulty show estimated HR of past 11 blocks
-    // as multiple of expected HR.  25 => HR is 2.5x difficulty's expected HR for past 11 blocks.
-    if ( next_D > 10000 ) {  next_D = (next_D/100)*100 + (T*110)/(TS[N] - TS[N-11] );    }
-
-    return static_cast<int64_t>(next_D);
-	}
-
-	difficulty_type Currency::nextDifficultyByLWMA3(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
-		// LWMA-3 difficulty algorithm
-		// Copyright (c) 2017-2018 Zawy, MIT License
-		// https://github.com/zawy12/difficulty-algorithms/issues/3
-		const uint64_t T = m_difficultyTarget;
-		size_t N = CryptoNote::parameters::DIFFICULTY_WINDOW_V4 - 1;
-		uint64_t  L(0), ST, sum_3_ST(0), next_D, prev_D, this_timestamp, previous_timestamp;
-		size_t n = timestamps.size();
-		assert(n == cumulativeDifficulties.size() && n <= N + 1);
-		if (n <= 2) return 1;
-		if (n < (N + 1)) N = n - 1;
-		previous_timestamp = timestamps[0];
-		for (size_t i = 1; i <= N; i++) {
-			if(timestamps[i] > previous_timestamp) {
-				this_timestamp = timestamps[i];
-			} else {
-				this_timestamp = previous_timestamp + 1;
-			}
-			ST = std::min(6 * T, this_timestamp - previous_timestamp);
-			previous_timestamp = this_timestamp;
-			L =+ ST * i;
-			if(i > N - 3) sum_3_ST += ST;
-		}
-		next_D = ((cumulativeDifficulties[N] - cumulativeDifficulties[0]) * T * (N + 1) * 99) / (100 * 2 * L);
-		prev_D = cumulativeDifficulties[N] - cumulativeDifficulties[N - 1];
-		next_D = std::max((prev_D * 67) / 100, std::min(next_D, (prev_D * 150) / 100));
-		if(sum_3_ST < (8 * T) / 10) next_D = std::max(next_D, (prev_D * 108) / 100);
-		return next_D;
-	}
-
 	difficulty_type Currency::nextDifficultyV4(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
-		return 500;
+		return 10;
 		/*
 		LWMA difficulty algorithm
 		Copyright (c) 2017-2018 Zawy
@@ -726,9 +640,9 @@ namespace CryptoNote {
 	}
 
 	difficulty_type Currency::nextDifficultyV2(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
+		return 10;
 		size_t m_difficultyWindow_2 = CryptoNote::parameters::DIFFICULTY_WINDOW_V2;
 		assert(m_difficultyWindow_2 >= 2);
-		return 100;
 
 		if (timestamps.size() > m_difficultyWindow_2) {
 			timestamps.resize(m_difficultyWindow_2);
@@ -771,8 +685,8 @@ namespace CryptoNote {
 	}
 
 	difficulty_type Currency::nextDifficultyV1(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
+		return 10;
 		assert(m_difficultyWindow >= 2);
-		return 100;
 		if (timestamps.size() > m_difficultyWindow) {
 			timestamps.resize(m_difficultyWindow);
 			cumulativeDifficulties.resize(m_difficultyWindow);
