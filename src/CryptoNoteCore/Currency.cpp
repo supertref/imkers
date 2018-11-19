@@ -585,7 +585,6 @@ namespace CryptoNote {
 	}
 
 	difficulty_type Currency::nextDifficultyV4(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
-		return 10;
 		/*
 		LWMA difficulty algorithm
 		Copyright (c) 2017-2018 Zawy
@@ -640,7 +639,6 @@ namespace CryptoNote {
 	}
 
 	difficulty_type Currency::nextDifficultyV2(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
-		return 10;
 		size_t m_difficultyWindow_2 = CryptoNote::parameters::DIFFICULTY_WINDOW_V2;
 		assert(m_difficultyWindow_2 >= 2);
 
@@ -685,7 +683,6 @@ namespace CryptoNote {
 	}
 
 	difficulty_type Currency::nextDifficultyV1(std::vector<uint64_t> timestamps, std::vector<difficulty_type> cumulativeDifficulties) const {
-		return 10;
 		assert(m_difficultyWindow >= 2);
 		if (timestamps.size() > m_difficultyWindow) {
 			timestamps.resize(m_difficultyWindow);
