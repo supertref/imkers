@@ -82,7 +82,7 @@ namespace CryptoNote {
   //---------------------------------------------------------------------------
   bool Checkpoints::is_alternative_block_allowed(uint32_t  blockchain_height, uint32_t block_height) const {
     if (0 == block_height) return false;
-    if (block_height < blockchain_height - CryptoNote::parameters::CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW) {
+    if (block_height < blockchain_height - CryptoNote::parameters::CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW && !is_in_checkpoint_zone(block_height)) {
       logger(Logging::ERROR, Logging::BRIGHT_WHITE) << "An attempt of too deep reorganization: " << blockchain_height - block_height << ", BLOCK REJECTED";
       return false;
     }
