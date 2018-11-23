@@ -1,10 +1,10 @@
-# Niobio Cash
+# English
 
 The Niobio Cash is the Brazilian national cryptocurrency, just like Bitcoin but more anonymous and privacy centric with opaque and more analysis resistant blockchain. It is people's electronic cash, not connected to government or officials.
 
 ## Binaries
 
-You can download the binaries for Linux, MacOS, and Windows [HERE](https://github.com/niobio-cash/Downloads)
+You can download the binaries for Linux, MacOS, and Windows [HERE](https://github.com/niobio-cash/niobio-node-daemon/releases)
 
 ## Building Niobio 
 
@@ -44,6 +44,59 @@ Dependencies: MSVC 2013 or later, CMake 2.8.6 or later, and Boost 1.55. You may 
 * http://www.boost.org/
 
 To build, change to a directory where this file is located, and run theas commands: 
+```
+mkdir build
+cd build
+cmake -G "Visual Studio 12 Win64" ..
+```
+
+# Português
+Niobio cash é uma criptomoeda brasileira, assim como o Bitcoin, mas mais anônima e centrada na privacidade, com resistência maior a análises da blockchain. É o dinheiro eletrônico das pessoas, não está ligado a governos.
+
+## Binários
+
+Você pode realizar o download dos Binários para Linux, MacOS, e Windows [AQUI](https://github.com/niobio-cash/niobio-node-daemon/releases)
+
+## Compilando Niobio
+
+### Em *nix e OSX
+
+Dependências: GCC 4.7.3 ou superior, CMake 2.8.6 ou superior e Boost 1.58.
+
+Você pode baixá-las em:
+
+* http://gcc.gnu.org/
+* http://www.cmake.org/
+* http://www.boost.org/
+* Como alternativa, pode ser possível instalá-las usando um gerenciador de pacotes.
+
+Para compilar, vá a pasta do projeto - mesmo diretório de src - e execute:
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+
+Os executáveis resultantes podem ser encontrados em `build/src`.
+
+**Opções Avançadas:**
+
+* Compilação paralela: execute `make -j<number of threads>` em vez de `make`.
+* Compilação debug: execute `make build-debug`.
+* Test suite: execute `make test-release` para executar testes além da compilação. Executando `make test-debug` fará o mesmo com a versão de depuração.
+* Compilando com Clang: pode ser possível usar Clang ao invés de GCC, mas isso pode não funcionar em todos os lugares. Para compilar, execute `export CC=clang CXX=clang++` antes de executar `make`.
+
+### No Windows
+Dependências: MSVC 2013 ou superior, CMake 2.8.6 ou superior e Boost 1.55. 
+
+Você pode baixá-las em:
+
+* http://www.microsoft.com/
+* http://www.cmake.org/
+* http://www.boost.org/
+
+Para compilar, vá ao diretório onde este arquivo está e execute os seguintes comandos:
 ```
 mkdir build
 cd build

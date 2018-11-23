@@ -66,7 +66,7 @@ using CryptoNote::ISerializer;
       std::list<transfer_destination> destinations;
       uint64_t fee;
       uint64_t mixin;
-      uint64_t unlock_time;
+      uint64_t unlock_time = 0;
       std::string payment_id;
 
       void serialize(ISerializer& s) {
@@ -100,12 +100,14 @@ using CryptoNote::ISerializer;
     uint64_t amount;
     uint64_t block_height;
     uint64_t unlock_time;
+    uint64_t confirmations;
 
     void serialize(ISerializer& s) {
       KV_MEMBER(tx_hash)
       KV_MEMBER(amount)
       KV_MEMBER(block_height)
       KV_MEMBER(unlock_time)
+      KV_MEMBER(confirmations)
     }
   };
 
@@ -140,6 +142,7 @@ using CryptoNote::ISerializer;
     std::string address;
     uint64_t blockIndex;
     uint64_t unlockTime;
+    uint64_t confirmations;
 
     void serialize(ISerializer& s) {
       KV_MEMBER(time)
@@ -151,6 +154,7 @@ using CryptoNote::ISerializer;
       KV_MEMBER(address)
       KV_MEMBER(blockIndex)
       KV_MEMBER(unlockTime)
+      KV_MEMBER(confirmations)
     }
   };
 
@@ -181,8 +185,8 @@ using CryptoNote::ISerializer;
   struct COMMAND_RPC_RESET {
     typedef CryptoNote::EMPTY_STRUCT request;
     typedef CryptoNote::EMPTY_STRUCT response;
-  }; 
-  
+  };
+
   struct COMMAND_RPC_GET_ADDRESS {
     typedef CryptoNote::EMPTY_STRUCT request;
 

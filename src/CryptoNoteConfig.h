@@ -29,18 +29,22 @@ const size_t   CRYPTONOTE_MAX_BLOCK_BLOB_SIZE                = 500000000;
 const size_t   CRYPTONOTE_MAX_TX_SIZE                        = 1000000000;
 const uint64_t CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX       = 126; // addresses start with "N"
 const size_t   CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW          = 10;
+const size_t   TESTNET_CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW  = 0;
 const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT            = 60 * 60 * 2;
 const uint64_t CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT_V4         = DIFFICULTY_TARGET * 7;
 
 const size_t   BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW             = 60;
+const size_t   BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW_V5          = 11;
 
 // MONEY_SUPPLY - total number coins to be generated
 const uint64_t MONEY_SUPPLY                                  = UINT64_C(33600000000000000);
 const uint64_t TAIL_EMISSION_REWARD                          = 0; //UINT64_C(1000000000000);
 const size_t CRYPTONOTE_COIN_VERSION                         = 1;
 const unsigned EMISSION_SPEED_FACTOR                         = 18;
+const unsigned EMISSION_SPEED_FACTOR_V5                      = 20;
+const uint64_t EMISSION_REDUCTOR_V6                          = UINT64_C(2147483648);
 static_assert(EMISSION_SPEED_FACTOR <= 8 * sizeof(uint64_t), "Bad EMISSION_SPEED_FACTOR");
-
+static_assert(EMISSION_SPEED_FACTOR_V5 <= 8 * sizeof(uint64_t), "Bad EMISSION_SPEED_FACTOR");
 const size_t   CRYPTONOTE_REWARD_BLOCKS_WINDOW               = 100;
 const size_t   CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE     = 1000000; //size of block (bytes) after which reward for block calculated using block size
 const size_t   CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE_V2  = 1000000;
@@ -76,10 +80,13 @@ const size_t   FUSION_TX_MIN_IN_OUT_COUNT_RATIO              = 4;
 
 const uint32_t UPGRADE_HEIGHT_V2                             = 1;
 const uint32_t UPGRADE_HEIGHT_V3                             = 30;
-const uint32_t UPGRADE_HEIGHT_V4                             = -1;
-const unsigned UPGRADE_VOTING_THRESHOLD											 = 90;   // percent
-const uint32_t   UPGRADE_VOTING_WINDOW                       = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
-const uint32_t   UPGRADE_WINDOW                              = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
+const uint32_t UPGRADE_HEIGHT_V4                             = 73731;
+const uint32_t UPGRADE_HEIGHT_V5                             = 92999;
+const uint32_t UPGRADE_HEIGHT_V6                             = 153559;
+
+const unsigned UPGRADE_VOTING_THRESHOLD                      = 90;   // percent
+const uint32_t UPGRADE_VOTING_WINDOW                         = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
+const uint32_t UPGRADE_WINDOW                                = EXPECTED_NUMBER_OF_BLOCKS_PER_DAY;  // blocks
 static_assert(0 < UPGRADE_VOTING_THRESHOLD && UPGRADE_VOTING_THRESHOLD <= 100, "Bad UPGRADE_VOTING_THRESHOLD");
 static_assert(UPGRADE_VOTING_WINDOW > 1, "Bad UPGRADE_VOTING_WINDOW");
 
@@ -101,18 +108,20 @@ const uint8_t  BLOCK_MAJOR_VERSION_1                         =  1;
 const uint8_t  BLOCK_MAJOR_VERSION_2                         =  2;
 const uint8_t  BLOCK_MAJOR_VERSION_3                         =  3;
 const uint8_t  BLOCK_MAJOR_VERSION_4                         =  4;
+const uint8_t  BLOCK_MAJOR_VERSION_5                         =  5;
+const uint8_t  BLOCK_MAJOR_VERSION_6                         =  6;
 const uint8_t  BLOCK_MINOR_VERSION_0                         =  0;
 const uint8_t  BLOCK_MINOR_VERSION_1                         =  1;
 
-const size_t   BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT        =  10000;  //by default, blocks ids count in synchronizing
-const size_t   BLOCKS_SYNCHRONIZING_DEFAULT_COUNT            =  300;    //by default, blocks count in blocks downloading
-const size_t   COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT         =  1000;
+const size_t   BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT        =  64;  //by default, blocks ids count in synchronizing
+const size_t   BLOCKS_SYNCHRONIZING_DEFAULT_COUNT            =  64;    //by default, blocks count in blocks downloading
+const size_t   COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT         =  64;
 
 const int      P2P_DEFAULT_PORT                              =  8313;
 const int      RPC_DEFAULT_PORT                              =  8314;
 
 const size_t   P2P_LOCAL_WHITE_PEERLIST_LIMIT                =  1000;
-const size_t   P2P_LOCAL_GRAY_PEERLIST_LIMIT                 =  5000;
+const size_t   P2P_LOCAL_GRAY_PEERLIST_LIMIT                 =  500;
 
 const size_t   P2P_CONNECTION_MAX_WRITE_BUFFER_SIZE          = 64 * 1024 * 1024; // 64 MB
 const uint32_t P2P_DEFAULT_CONNECTIONS_COUNT                 = 10;
@@ -127,12 +136,10 @@ const size_t   P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT          = 5000;          //
 const char     P2P_STAT_TRUSTED_PUB_KEY[]                    = "";
 
 const char* const SEED_NODES[] = {
-	"remote-nbr-hydra.niobioco.in:8313",
-	"45.55.141.227:8313",
-	"138.197.222.188:8313",
-	"35.227.102.144:8313",
-	"66.70.167.192:8313",
-	"192.99.133.153:8313"
+	"198.245.50.69:8313",
+	"173.249.38.45:8313",
+	"80.241.215.133:8313",
+	"45.55.141.227:8313"
 };
 
 struct CheckpointData {
@@ -141,6 +148,8 @@ struct CheckpointData {
 };
 
 const std::initializer_list<CheckpointData> CHECKPOINTS = {
+	{ 1,     "62b3674f55adf428b586c9c45ec0f0c57660c61ac28c3f3bc087f8fccf246230" },
+	{ 14000, "acd4ffd637dedf06237bdc4ed6175bdcac9e01f907846a7d6d910a15826c4916" },
 	{ 19111, "80a25bf8b24f6b286d81d3fb9f65a3dd55c9fe1d508b3d463fa1c0512e45af6f" },
 	{ 19112, "7a0a41f6ccbf72b47a21841b8e876f29877bb57aa15d7adda27c757e77fc7021" },
 	{ 24758, "ef7b7c3803df58e06b21dde88c252569f118cda2fafeae9b56c6061e7c4c18eb" },
@@ -182,6 +191,7 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
 	{ 39319, "2ff445581f4aadf90ef8ebfe5b9ae1227a6c126290152c93afd352338334b23d" },
 	{ 39326, "64f45a501a206d91ad0df84e91d422e54eaa655a7159a87ef3034e487f9f3ea4" },
 	{ 39329, "3fee7fe3ec965ed629ff01af8eebd89c1ef09a221e0a52fe53b32ccd75a4ce04" },
+	{ 39359, "efe94dda8fac610894fffc6a7135bd1869bc827d286fcaaae5e13b94a876bf8a" },
 	{ 39421, "33ed8b5a1e3b925de9b8512e81e2fa57e129b91028c20e43e3bb16ef399d016b" },
 	{ 39500, "035f9be0f7d2cf8fffc55a698e90be74d8885321f4c43468cfdd3aa013e5d094" },
 	{ 41100, "f917db589f0bb85d7538528672e8e5166e222bf3e7086d39ec7999ce7a361915" },
@@ -191,7 +201,11 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
 	{ 47330, "924feb71a2c589718e8c8a922d9cf5e3ad3163441e4c975bbf41e413481342c2" },
 	{ 55796, "57669ca842c749dea8d50eded31f3b7082b9e5482b73fb9ce60aa1d431e49dea" },
 	{ 66568, "d3d2f05745ce8af6e71b190782e560362cbc62571ffce7fb7c4b5bd848e88ea1" },
-	{ 71714, "71af9b2599f0a44cdaa8be0dba5d78f4c23dbb3730d69ee217e6a8f0649f9592" }
+	{ 71714, "71af9b2599f0a44cdaa8be0dba5d78f4c23dbb3730d69ee217e6a8f0649f9592" },
+	{ 76072, "85313bc7fc25455f71ceab7660470b4bb6d22d6c72551f80a55308616d7ec19a" },
+	{ 81895, "759d10ef6fcdd6f0b91ca59369d5c4cb0543102d054c421210bd57a4cbdae5dd" },
+	{ 90132, "6012c9bf6e8970f49de3736a4e952a465c61c67770d3c44e83509c9b2375ccc4" },
+	{ 94584, "cdc4a440b8a9e3bc4b1e665421d22d8c4895e3df92dcad248492a346aad63c28" }
 };
 
 } // CryptoNote
