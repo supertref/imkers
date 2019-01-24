@@ -101,7 +101,7 @@ const char     TESTNET_FILENAME_PREFIX[]                     = "testnet_";
 } // parameters
 
 const char     CRYPTONOTE_NAME[]                             = "imkers";
-const char     GENESIS_COINBASE_TX_HEX[]                     = "";
+const char     GENESIS_COINBASE_TX_HEX[]                     = "010a01ff0003cebdf3ef1702fc6980622df61cfa1f695bea8582848d9b2e0bcc2208abf2cde941f2321d38afcebdf3ef17025bf0b034af8e3895e26b6da61222977dfef6c4abc483b591d7ce7ed24f8b450381d59edead030252d128bc9913d5ee8b702c37609917c2357b2f587e5de5622348a3acd718e5d62101dfa0e559e3769007d61116f267c940e430980576505d5fdecb9fe7f355a627a4";
 
 const uint8_t  CURRENT_TRANSACTION_VERSION                   =  1;
 const uint8_t  BLOCK_MAJOR_VERSION_1                         =  1;
@@ -136,8 +136,7 @@ const size_t   P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT          = 5000;          //
 const char     P2P_STAT_TRUSTED_PUB_KEY[]                    = "";
 
 const char* const SEED_NODES[] = {
-	"23.97.233.228:8313",
-	"137.117.220.247:8313"
+	"13.81.27.250:8313"
 };
 
 struct CheckpointData {
@@ -146,7 +145,6 @@ struct CheckpointData {
 };
 
 const std::initializer_list<CheckpointData> CHECKPOINTS = {
-	{ 1, "[checkpoint block see on checkpoint list]" }
 };
 
 } // CryptoNote
