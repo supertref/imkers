@@ -101,7 +101,7 @@ const char     TESTNET_FILENAME_PREFIX[]                     = "testnet_";
 } // parameters
 
 const char     CRYPTONOTE_NAME[]                             = "imkoin";
-const char     GENESIS_COINBASE_TX_HEX[]                     = "";
+const char     GENESIS_COINBASE_TX_HEX[]                     = "010a01ff0003cebdf3ef17026a126abef8a213434034de915269c09be87e9bfe9b002f6bd40549a3c23cd620cebdf3ef170252a690bf46b1fb3671bc443da7f49b1f8c90b01c5a5ee4c7ffd1549983f8f8eb81d59edead030252d128bc9913d5ee8b702c37609917c2357b2f587e5de5622348a3acd718e5d62101329b392f3cede15fe366b3d92d4310fc85f5bb147a9a992029a9a49bceadc928";
 
 const uint8_t  CURRENT_TRANSACTION_VERSION                   =  1;
 const uint8_t  BLOCK_MAJOR_VERSION_1                         =  1;
