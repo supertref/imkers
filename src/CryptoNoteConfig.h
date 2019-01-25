@@ -100,7 +100,7 @@ const char     MINER_CONFIG_FILE_NAME[]                      = "miner_conf.json"
 const char     TESTNET_FILENAME_PREFIX[]                     = "testnet_";
 } // parameters
 
-const char     CRYPTONOTE_NAME[]                             = "imkers";
+const char     CRYPTONOTE_NAME[]                             = "imkoin";
 const char     GENESIS_COINBASE_TX_HEX[]                     = "";
 
 const uint8_t  CURRENT_TRANSACTION_VERSION                   =  1;
