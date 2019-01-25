@@ -101,7 +101,7 @@ const char     TESTNET_FILENAME_PREFIX[]                     = "testnet_";
 } // parameters
 
 const char     CRYPTONOTE_NAME[]                             = "imkers";
-const char     GENESIS_COINBASE_TX_HEX[]                     = "010a01ff0003cebdf3ef1702fc6980622df61cfa1f695bea8582848d9b2e0bcc2208abf2cde941f2321d38afcebdf3ef17025bf0b034af8e3895e26b6da61222977dfef6c4abc483b591d7ce7ed24f8b450381d59edead030252d128bc9913d5ee8b702c37609917c2357b2f587e5de5622348a3acd718e5d62101dfa0e559e3769007d61116f267c940e430980576505d5fdecb9fe7f355a627a4";
+const char     GENESIS_COINBASE_TX_HEX[]                     = "010a01ff0003cebdf3ef1702cbf1614e6114372f46b647112bc8c233564499bcc6ffc6d1dae46e7b0bf3c6bccebdf3ef17020f06dbba6714b3f813cf1e0f6681d09fe876718af617071f08cf18469b14369281d59edead030252d128bc9913d5ee8b702c37609917c2357b2f587e5de5622348a3acd718e5d62101b49fb3529d3fd5303bcae8e4899813107e8fe5b8670406196efdb67345008e6e";
 
 const uint8_t  CURRENT_TRANSACTION_VERSION                   =  1;
 const uint8_t  BLOCK_MAJOR_VERSION_1                         =  1;
