@@ -146,6 +146,8 @@ struct CheckpointData {
 };
 
 const std::initializer_list<CheckpointData> CHECKPOINTS = {
+	{ 1,     "2dbb212aa97ef703fca7bfbc3c0638ac4e24043f53ed3b8c6829077442b2c096" },
+	{ 29,     "60d47c4ac41beebcca7ee0efce863e6061f05ee3ab28b4369108d7b191e2e209" }
 };
 
 } // CryptoNote
